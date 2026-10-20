@@ -1,0 +1,16 @@
+<section id="pencil" data-transition="fade" style="background:#F7F6F2;color:#132433;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 96px 160px;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:16px"><div style="width:40px;height:4px;background:#B4622A"></div><p style="font-size:26px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:#5B6168">The decomposition</p></div>
+<h2 style="font-size:60px;font-weight:600;line-height:1.13;color:#132433">One real symmetric pencil, smoothest coordinates first</h2>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:48px">
+<img src="/_blob/1a5cbd8cd6a468eee60edf045bd1c790" alt="Sigma_v psi = mu Sigma_x psi, Sigma_x = mean of x x^T, Sigma_v = mean of xdot xdot^T" style="width:1300px;height:80px;object-fit:contain">
+<img src="/_blob/33abafc0187b5e4a3135984b193d0c5b" alt="q = X Psi, Phi = Sigma_x Psi, mu_i = mean qdot_i^2 / mean q_i^2, lambda_i = 1/mu_i" style="width:1100px;height:130px;object-fit:contain">
+<ul style="font-size:40px;line-height:1.45;color:#132433;width:1500px">
+<li>Rows of X are time samples, columns are channels.</li>
+<li>Each μ is the mean-square frequency of its coordinate; the smallest comes first.</li>
+<li>Options change only how the covariances are formed: derivative, step, lag, centring, rank.</li>
+</ul>
+</div>
+<p style="position:absolute;left:96px;bottom:56px;width:900px;font-size:24px;color:#5B6168">Nonlinear Dynamics Laboratory · SOD toolbox</p>
+<img src="/_blob/e495239556305b4430f844d60724d74c" alt="NLD" style="position:absolute;right:96px;bottom:48px;width:104px;height:40px;object-fit:contain">
+<aside>Covectors psi are normalised so that psi^T Sigma_x psi = 1. Smooth coordinates q = X Psi then have unit variance, smooth modes Phi = Sigma_x Psi satisfy Psi^T Phi = I, and X = q Phi^T on the data subspace. The smooth orthogonal values are lambda = 1/mu. Introduced for mode identification by Chelidze and Zhou (JSV 2006) and for random excitation by Farooq and Feeny (JSV 2008).</aside>
+</section>

@@ -1,0 +1,10 @@
+geometry: omega [0.43801 1.86408]  SOD freq [0.4381  1.86434]  angles (deg): LNM1-LNM2 67.9, POD2-LNM2 24.6, SOD2-LNM2 0.002
+backbone: zero-crossing frequency first/last 0.6929 / 0.6180, linear 0.6180
+  window  6 periods, boundary=False: median |dev| 3.6e-03, max 3.4e-02
+  window  6 periods, boundary=True : median |dev| 9.6e-04, max 2.8e-02
+  window 12 periods, boundary=False: median |dev| 3.2e-03, max 3.5e-02
+  window 12 periods, boundary=True : median |dev| 4.1e-04, max 3.2e-02
+trend: noise 0.0%: drift error SOD 3.9e-13, oracle 9.2e-16, |corr(POD 1, drift)| 0.010
+trend: noise 0.3%: drift error SOD 7.9e-03, oracle 7.8e-03, |corr(POD 1, drift)| 0.010
+trend: noise 1.0%: drift error SOD 2.6e-02, oracle 2.6e-02, |corr(POD 1, drift)| 0.010
+trend: noise 3.0%: drift error SOD 8.1e-02, oracle 7.8e-02, |corr(POD 1, drift)| 0.010

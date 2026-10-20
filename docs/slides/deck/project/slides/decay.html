@@ -1,0 +1,13 @@
+<section id="decay" data-transition="fade" style="background:#F7F6F2;color:#132433;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 96px 160px;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:16px"><div style="width:40px;height:4px;background:#B4622A"></div><p style="font-size:26px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:#5B6168">Damping</p></div>
+<h2 style="font-size:60px;font-weight:600;line-height:1.13;color:#132433">The subspace fit returns damping exactly; each plane fit to within 1 %</h2>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:32px">
+<img src="/_blob/ca99400171abb72e3cc042d0e6e11d3a" alt="L = mean qdot q^T times inverse of mean q q^T; tr L = (q_T^T G^-1 q_T - q_0^T G^-1 q_0)/2T" style="width:1100px;height:114px;object-fit:contain">
+<div style="background:#FFFFFF;border:1px solid #DCD9D2;padding:16px;display:flex">
+<img src="/_blob/bfa8c392d94792506d3114eb9c9c03d8" alt="Example 4: mode 1 and 2 planes; relative damping error per plane about 1e-3 to 1e-2, subspace about 1e-14" style="width:1180px;height:454px;object-fit:contain">
+</div>
+</div>
+<p style="position:absolute;left:96px;bottom:56px;width:900px;font-size:24px;color:#5B6168">Nonlinear Dynamics Laboratory · SOD toolbox</p>
+<img src="/_blob/e495239556305b4430f844d60724d74c" alt="NLD" style="position:absolute;right:96px;bottom:48px;width:104px;height:40px;object-fit:contain">
+<aside>Example 4. Per-plane damping errors 3.6e-4, -2.7e-4, -5.2e-3 and 8.6e-3: a tilted plane leaks its neighbour's dynamics. The fit on all coordinates at once (a continuous-time least-squares relative of DMD) returned every zeta to 2.4e-14 or better. The trace of a plane fit depends only on the end states, so the estimate needs a record that has decayed. The identity is exact for the chord derivative; with exact qdot and sampled sums the two forms differ by O((|s| dt)^2 / zeta).</aside>
+</section>

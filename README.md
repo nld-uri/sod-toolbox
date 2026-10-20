@@ -84,29 +84,29 @@ planes = sod_pair_state(Rs.Q, dt, wmax, struct('Phi', Rs.Phi));
 - **Petrov-Galerkin state ROMs with the data covectors are unstable in general.**
   Use the energy weight (`energy_weight(M, K)` in `rom_state`).
 
+## Documentation
+
+- `docs/manual/SOD_manual.pdf`: user manual (LaTeX source alongside; compile with XeLaTeX).
+- `docs/slides/SOD_toolbox_slides.pdf` and `SOD_toolbox.pptx`: NLD-branded slide deck with four animations.
+- `docs/animations/`: the animations (MP4) and their stills; `make_animations.py` rebuilds them and
+  `report_numbers.py` prints every number the manual quotes for them.
+- `python/examples/`, `matlab/examples/`: four worked examples (an undamped chain, central-difference bias,
+  sensor noise and recognition, damping from a decay); each Python example stores its printed output.
+
 ## Tests
 
-```
-cd python/tests; python3 test_sod.py     # 15 self-contained checks of known properties
-cd matlab; test_sod                      # 32 checks of the MATLAB port against Python
-```
-
-`test_sod.py` checks exact SOVs `1/omega^2` and LNM covectors from exact
-covariances, the central-difference bias, recognition order, damping of a decay,
-the residual basis and the exact simulator. `make_reference.py` regenerates
-`matlab/sod_reference.mat` from the Python implementation.
-
-## Requirements
-
-Python 3.10+ with NumPy and SciPy (`requirements.txt`). MATLAB R2020b or later;
-no toolboxes (the DCT is computed from an FFT).
+- `python/tests/test_sod.py`: 15 self-contained checks of known properties.
+- `python/tests/make_reference.py` writes `matlab/sod_reference.mat`;
+  `matlab/test_sod.m` checks the MATLAB port against it (32 checks).
 
 ## Layout
 
-    python/sodtoolbox/   core, recognize, damping, tracking, rom, residual
+    python/sodtoolbox/   core, recognize, damping, tracking, rom, residual, systems, plotting
+    python/examples/     four worked examples
+    docs/                manual, slides, animations, web images
     python/tests/        self-contained tests and the MATLAB reference generator
     matlab/              sod_*.m, test_sod.m, sod_reference.mat
 
 ## License
 
-MIT. See `LICENSE`.
+MIT. See `LICENSE`. Fonts in `docs/manual/fonts` are IBM Plex, SIL Open Font License (`OFL-LICENSE.txt`).

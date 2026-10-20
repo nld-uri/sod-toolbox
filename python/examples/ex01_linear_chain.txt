@@ -1,0 +1,5 @@
+T =   250: SOV x omega^2 - 1 = +1.5e-05 -1.2e-03 -1.2e-03 -4.7e-04
+T =  1000: SOV x omega^2 - 1 = -2.5e-03 +7.2e-04 -1.1e-03 +1.3e-04
+T =  4000: SOV x omega^2 - 1 = +5.2e-04 +3.1e-04 -8.9e-05 +5.0e-05
+MAC(smooth mode, LNM), T = 4000: 0.99999999 0.99999995 0.99999995 0.99999994
+wrote /home/claude/sodpaper/SOD-toolbox/python/examples/figures/ex01_linear_chain.pdf

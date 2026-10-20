@@ -1,0 +1,7 @@
+configuration SOD freq / |s| - 1: +2.1e-03 -8.2e-03 +1.5e-02 -1.3e-02
+mode 1: zeta exact 0.02000  per-plane 0.02001 (+3.6e-04)  subspace 0.02000 (-2.4e-14)
+mode 2: zeta exact 0.01345  per-plane 0.01345 (-2.7e-04)  subspace 0.01345 (+7.5e-15)
+mode 3: zeta exact 0.01523  per-plane 0.01515 (-5.2e-03)  subspace 0.01523 (-2.4e-15)
+mode 4: zeta exact 0.02000  per-plane 0.02017 (+8.6e-03)  subspace 0.02000 (-2.1e-15)
+planes (a, b, circularity): [(0, 1), (2, 3), (4, 5), (6, 7)] [np.float64(0.993), np.float64(0.995), np.float64(0.993), np.float64(0.992)]
+wrote /home/claude/sodpaper/SOD-toolbox/python/examples/figures/ex04_damped_decay.pdf

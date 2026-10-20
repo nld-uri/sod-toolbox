@@ -1,0 +1,8 @@
+dt = 0.010: raw -2.6e-04 -1.7e-04 -2.7e-06 -1.3e-04  | corrected -2.6e-04 -1.5e-04 +4.3e-05 -2.3e-05
+dt = 0.018: raw -2.7e-04 -2.1e-04 -1.2e-04 -4.0e-04  | corrected -2.6e-04 -1.6e-04 +3.6e-05 -2.9e-05
+dt = 0.034: raw -2.9e-04 -3.6e-04 -5.0e-04 -1.3e-03  | corrected -2.6e-04 -1.6e-04 +2.9e-05 -3.6e-05
+dt = 0.063: raw -3.6e-04 -8.4e-04 -1.8e-03 -4.4e-03  | corrected -2.6e-04 -1.7e-04 +1.7e-05 -4.6e-05
+dt = 0.117: raw -5.9e-04 -2.5e-03 -6.2e-03 -1.5e-02  | corrected -2.6e-04 -1.8e-04 -2.4e-07 -6.1e-05
+dt = 0.216: raw -1.4e-03 -8.0e-03 -2.1e-02 -5.0e-02  | corrected -2.5e-04 -1.8e-04 -1.4e-05 -6.3e-05
+dt = 0.400: raw -4.1e-03 -2.7e-02 -7.1e-02 -1.7e-01  | corrected -2.3e-04 -1.6e-04 -8.7e-06 +1.2e-05
+wrote /home/claude/sodpaper/SOD-toolbox/python/examples/figures/ex02_fd_bias.pdf

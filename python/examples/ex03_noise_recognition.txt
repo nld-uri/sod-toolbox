@@ -1,0 +1,4 @@
+central  SOD freq [ 0.282  0.788  1.385  3.627 14.283 15.757]  kept [np.int64(0)]  peaks [0.27]
+lagged   SOD freq [0.271 0.739 1.167 1.564 1.849 8.43 ]  kept [np.int64(0), np.int64(1), np.int64(2), np.int64(3)]  peaks [0.27  0.735 1.168 1.566]
+true omega         [0.271 0.741 1.174 1.582 2.059 2.747]
+wrote /home/claude/sodpaper/SOD-toolbox/python/examples/figures/ex03_noise_recognition.pdf

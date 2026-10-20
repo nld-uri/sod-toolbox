@@ -1,0 +1,22 @@
+{
+ "3fa0ad958d07bc1a18b017d184d0c357": "assets/nld-mark-hero-on-navy.png",
+ "c78be4ab0e93217b086cdd346e31575e": "assets/nld-lockup-horizontal-on-navy.png",
+ "e495239556305b4430f844d60724d74c": "assets/nld-lockup-compact.png",
+ "59df1f293aa9bc5d51cfa79259d3c912": "assets/nld-mark-on-navy.png",
+ "6c9ad04e24c92b471399b0f5e6185c12": "assets/nld-lockup-compact-on-navy.png",
+ "1a5cbd8cd6a468eee60edf045bd1c790": "assets/eq_pencil.svg",
+ "33abafc0187b5e4a3135984b193d0c5b": "assets/eq_defs.svg",
+ "d7ccee607df046b90e7ef103cce64a73": "assets/eq_exact.svg",
+ "7f36dda17990ce4bb761d2df3e706c74": "assets/eq_ssod.svg",
+ "05333cf38f4563b91a2c8e9a100b8244": "assets/eq_fd.svg",
+ "ca99400171abb72e3cc042d0e6e11d3a": "assets/eq_trL.svg",
+ "26f8d2a237a109240be487c84134153c": "assets/eq_defect.svg",
+ "c461c2f7ade719c2d05813ffcf339309": "assets/ex01_linear_chain.png",
+ "3697333d7fc682b43667f4002a4c24ab": "assets/ex02_fd_bias.png",
+ "66dafd24bac3a6b63406c017f946da0f": "assets/ex03_noise_recognition.png",
+ "bfa8c392d94792506d3114eb9c9c03d8": "assets/ex04_damped_decay.png",
+ "1044a4202e948c78da103e3f176d6a45": "assets/state_plane_deck.gif",
+ "fca6d8e2a0efc9a47a6f27f120195b5e": "assets/backbone_tracking_deck.gif",
+ "77b3bca76a452080a890dbb7623e547a": "assets/trend_extraction_deck.gif",
+ "f121f285e57a8e6be341544a1af284d6": "assets/rayleigh_quotient_deck.gif"
+}

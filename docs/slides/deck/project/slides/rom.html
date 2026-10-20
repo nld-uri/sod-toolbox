@@ -1,0 +1,23 @@
+<section id="rom" data-transition="fade" style="background:#F7F6F2;color:#132433;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 96px 160px;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:16px"><div style="width:40px;height:4px;background:#B4622A"></div><p style="font-size:26px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:#5B6168">Reduced-order models</p></div>
+<h2 style="font-size:60px;font-weight:600;line-height:1.13;color:#132433">Smooth modes are a data-driven basis for Galerkin models</h2>
+<div style="flex:1;display:flex;flex-direction:row;gap:40px;align-items:center">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;border:1px solid #DCD9D2;padding:40px">
+<h3 style="font-size:44px;font-weight:600;color:#132433">Bases</h3>
+<p style="font-size:38px;line-height:1.4">lnm, mta, pod, sod_modes, complex_modes</p>
+<p style="font-size:38px;line-height:1.4">Exact zero-order-hold simulation of the full model and of every ROM.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;border:1px solid #DCD9D2;padding:40px">
+<h3 style="font-size:44px;font-weight:600;color:#132433">Projections</h3>
+<p style="font-size:38px;line-height:1.4">rom_config: Galerkin on any basis.</p>
+<p style="font-size:38px;line-height:1.4">rom_state: energy-Galerkin on state-SOD modes; Petrov–Galerkin is unstable in general.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;border:1px solid #DCD9D2;padding:40px">
+<h3 style="font-size:44px;font-weight:600;color:#132433">Nonlinear</h3>
+<p style="font-size:38px;line-height:1.4">residual_basis: smooth linear core plus the quasi-static response to its equation error.</p>
+</div>
+</div>
+<p style="position:absolute;left:96px;bottom:56px;width:900px;font-size:24px;color:#5B6168">Nonlinear Dynamics Laboratory · SOD toolbox</p>
+<img src="/_blob/e495239556305b4430f844d60724d74c" alt="NLD" style="position:absolute;right:96px;bottom:48px;width:104px;height:40px;object-fit:contain">
+<aside>MTA: modal truncation augmentation, LNMs plus the static load vectors, M-orthonormal. Energy-Galerkin uses the weight blockdiag(K, M). The residual basis fits qdd = Ka q + Ca qd on the r1 smoothest coordinates and adds POD directions of K^-1 M e, the quasi-static displacement driven by the residual force (kind 'k'). Acceleration-level residuals ('a', 'f') were not useful in our nonlinear-beam tests.</aside>
+</section>
