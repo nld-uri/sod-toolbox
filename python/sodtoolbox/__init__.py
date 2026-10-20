@@ -1,0 +1,18 @@
+"""SOD Toolbox: smooth orthogonal decomposition for modal identification and reduced-order modelling.
+
+Modules
+    core       configuration SOD, state SOD, lagged and scaled variants, boundary-corrected fit (csod)
+    recognize  mode recognition: DCT spectra, spectral consistency, circularity pairing, banded rescue
+    damping    plane-wise damping fit and the damping identity
+    tracking   windowed SOD for slowly varying (trend) records
+    rom        bases (LNM, MTA, POD, SOD, complex modes), Galerkin and energy-Galerkin ROMs, exact simulation
+    residual   linear-core-plus-residual bases for nonlinear ROMs
+"""
+from .core import *          # noqa: F401,F403
+from .recognize import *     # noqa: F401,F403
+from .damping import *       # noqa: F401,F403
+from .tracking import *      # noqa: F401,F403
+from .rom import *           # noqa: F401,F403
+from .residual import *      # noqa: F401,F403
+
+__version__ = '0.1.0'
