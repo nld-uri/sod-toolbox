@@ -35,7 +35,7 @@
 \lstset{style=nld}
 
 \title{SOD toolbox}
-\subtitle{User manual for smooth orthogonal decomposition\\ in Python and MATLAB, version 0.1}
+\subtitle{User manual for smooth orthogonal decomposition\\ in Python and MATLAB, version 0.3}
 \reportnumber{User manual}
 \author{Nonlinear Dynamics Laboratory}
 \date{October 2026}
@@ -497,7 +497,9 @@ Each covector $\symbf p$ gives a mode $\symbf{\phi}=\symbf W^\top\symbf p$ of un
 $\mu=\|D\symbf{\phi}\|^2/\|\symbf{\phi}\|^2$ is the Rayleigh quotient of the spatial operator $D$.
 For a sinusoidal shape $\mu=k^{2m}$, with $m$ the operator order; $k=\mu^{1/(2m)}$ is the SMD wavenumber.
 \begin{itemize}
-\item Operators: \code{'grad'} ($m=1$; strings, membranes, flows), \code{'second'} ($m=2$; beams, and the Hessian with weight 2 on the mixed term for plates), \code{'laplacian'} ($m=2$).
+\item Operators: \code{'grad'} ($m=1$; strings, membranes, flows), \code{'second'} ($m=2$; beams, and the Hessian with weight 2 on the mixed term on grids), \code{'laplacian'} ($m=2$), \code{'plate'} ($m=2$; Kirchhoff bending energy $(1-\nu)(w_{xx}^2+2w_{xy}^2+w_{yy}^2)+\nu(\nabla^2w)^2$, Poisson ratio \code{nu}).
+\item Physical weights: \code{density} (mass per length or area) multiplies the weights of $\symbf S_W$ and \code{stiffness} ($T$, $EI$ or the plate rigidity) those of $\symbf S_G$. For a self-adjoint structure matched by the operator, $\mu_i=\omega_i^2$ (\code{R.omega}) and the modes are mass-normalized, from any snapshots that span them. Unit weights bias the modes of non-uniform structures, which are mass-orthogonal, not $L^2$-orthogonal.
+\item \code{maf} is the maximum autocorrelation factor transform (Switzer and Green, 1984) with snapshots as bands: SMD with a forward-difference gradient and unit weights.
 \item Derivative estimators: \code{'fd'} (second-order finite differences, also on non-uniform lines; a derivative is kept only where its stencil is measured), \code{'whittaker'} (penalized smoothing with gain $1/(1+(k/k_c)^{2p})$; fills masked points), \code{'savgol'} (local polynomials on complete uniform grids; the window is set from the measured half-gain cutoff).
 \item Both integrals run over the points where the derivative is valid. Snapshot order, spacing and rate are never used.
 \item Cutoffs: in the beam test with 0.5\% noise, Whittaker needed $k_c$ about 3--6 times and Savitzky--Golay about 8 times the largest wavenumber of interest. Scan $k_c$ with \code{smd\_kc\_scan} and keep a value where the wavenumbers do not move.
@@ -507,8 +509,9 @@ For a sinusoidal shape $\mu=k^{2m}$, with $m$ the operator order; $k=\mu^{1/(2m)
 correlated snapshots give identical results. With the operator matched to the stiffness on a complete
 domain, strings, cantilever beams and membranes return their modes and wavenumbers to discretization error.
 A hole in the field, a partial field of view or a mismatched operator biases them. These are the spatial
-counterparts of SOD's correlation and boundary terms (\code{python/tests/test\_smd.py}, 22 checks;
-\code{matlab/test\_smd.m}, 31 checks including agreement with Python).
+counterparts of SOD's boundary terms. With physical weights a tapered pinned--pinned beam returns its
+frequencies to $1.3\times10^{-4}$ from five snapshots (\code{python/tests/test\_smd.py}, 30 checks;
+\code{matlab/test\_smd.m}, 42 checks including agreement with Python).
 
 \section{Reference}\label{sec:reference}
 
@@ -550,6 +553,7 @@ Python (\code{sodtoolbox}) & MATLAB & Purpose\\
 \code{make\_grid} & \code{sod\_smd\_grid} & SMD grid, mask, quadrature weights\\
 \code{smd\_derivatives} & \code{sod\_smd\_derivs} & spatial derivative fields\\
 \code{smd}, \code{smd\_kc\_scan} & \code{sod\_smd}, \code{sod\_smd\_kc\_scan}, \code{sod\_smd\_mode} & smooth mode decomposition; cutoff scan\\
+\code{maf} & \code{sod\_smd\_maf} & maximum autocorrelation factors\\
 \bottomrule
 \end{longtable}
 \end{center}

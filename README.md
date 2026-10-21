@@ -59,7 +59,8 @@ temporally smooth coordinate, not a spatially smoothed shape.
 | metrics | `merr`, `mac`, `principal_angles`, `mortho` | `sod_merr`, `sod_mac`, `sod_mortho` |
 | SMD grid (line or grid, mask, quadrature weights) | `make_grid` | `sod_smd_grid` |
 | spatial derivative fields (fd, Savitzky-Golay, Whittaker) | `smd_derivatives` | `sod_smd_derivs` |
-| smooth mode decomposition, cutoff scan | `smd`, `smd_kc_scan` | `sod_smd`, `sod_smd_kc_scan`, `sod_smd_mode` |
+| smooth mode decomposition, cutoff scan (density/stiffness weights) | `smd`, `smd_kc_scan` | `sod_smd`, `sod_smd_kc_scan`, `sod_smd_mode` |
+| maximum autocorrelation factors (Switzer-Green) | `maf` | `sod_smd_maf` |
 
 ## Quick start
 
@@ -112,7 +113,11 @@ measured field in place of velocities. Snapshots need no time order, spacing or 
     phi = W' p,  mu = ||D phi||^2 / ||phi||^2,  k = mu^(1/(2m))  (SMD wavenumber)
 
 Pick the operator from the physics: `'grad'` (m = 1) for strings, membranes and flows; `'second'` (m = 2)
-for beams (on a grid: the Hessian, plate bending); `'laplacian'` (m = 2). Pick the derivative estimator
+for beams (on a grid: the Hessian); `'laplacian'` (m = 2); `'plate'` (m = 2, Kirchhoff bending energy with Poisson
+ratio `nu`). Give `density` (mass per length or area) and `stiffness` (T, EI or plate rigidity) to weight the pencil
+physically: then `mu = omega^2` and `R.omega` estimates the natural frequencies of a self-adjoint structure, and
+non-uniform structures are handled exactly (unit weights bias their modes, because they are mass-orthogonal, not
+L2-orthogonal). Pick the derivative estimator
 from the data: `'fd'` (finite differences; noise-free or coarse data), `'whittaker'` (penalized smoothing;
 fills masked points), `'savgol'` (local polynomials; complete uniform grids). For noisy data scan the
 cutoff `kc` with `smd_kc_scan` and keep a value where the wavenumbers do not move: Whittaker about 3-6
@@ -137,14 +142,18 @@ What the tests show (`python/tests/test_smd.py`): SMD values depend only on the 
 so shuffled or correlated snapshots give the same result. On a complete domain with the operator matched
 to the stiffness, the modes and wavenumbers of strings, cantilever beams and membranes are recovered to
 discretization error. A hole in the field, a partial field of view, or a mismatched operator biases them;
-these are the spatial counterparts of SOD's boundary terms.
+these are the spatial counterparts of SOD's boundary terms. With density and stiffness weights, a tapered
+pinned-pinned beam gives its frequencies to 1.3e-4 from five snapshots, one per mode.
+
+The pencil is not new as such: `maf` is the maximum autocorrelation factor transform of Switzer and Green (1984)
+with snapshots as bands, which equals SMD with a forward-difference gradient and unit weights.
 
 ## Tests
 
 - `python/tests/test_sod.py`: 15 self-contained checks of known properties.
-- `python/tests/test_smd.py`: 22 checks of SMD, five of them failure controls that must fail.
+- `python/tests/test_smd.py`: 30 checks of SMD, six of them failure controls that must fail.
 - `python/tests/make_smd_reference.py` writes `matlab/smd_reference.mat`; `matlab/test_smd.m`
-  checks the MATLAB port against it (31 checks; MATLAB R2026b, Python 3.11).
+  checks the MATLAB port against it (42 checks; MATLAB R2026b, Python 3.11).
 - `python/tests/make_reference.py` writes `matlab/sod_reference.mat`;
   `matlab/test_sod.m` checks the MATLAB port against it (32 checks).
 

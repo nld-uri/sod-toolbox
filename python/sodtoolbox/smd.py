@@ -20,6 +20,18 @@ Operators (choose by the stiffness of the structure or the physics of the field)
     'grad'      m = 1: d/dx on a line; (d/dx, d/dy) on a grid. Strings, membranes, flows (Dirichlet energy).
     'second'    m = 2: d2/dx2 on a line (beams); on a grid the Hessian (xx, sqrt2 xy, yy) (plate bending energy).
     'laplacian' m = 2: d2/dx2 on a line; d2/dx2 + d2/dy2 on a grid.
+    'plate'     m = 2: Kirchhoff plate bending energy (1-nu)(w_xx^2 + 2 w_xy^2 + w_yy^2) + nu (w_xx + w_yy)^2 with
+                Poisson ratio nu (keyword nu, default 0.3); 'second' on a line.
+
+Physical weighting (Rayleigh quotient). With density (mass per unit length or area) in S_W and stiffness (T, EI or the
+plate rigidity D) in S_G, mu = strain energy / kinetic-energy norm. For a self-adjoint structure whose stiffness is
+matched by the operator, mu_i = omega_i^2 exactly (rad^2/s^2) and the modes are the mass-orthonormal normal modes,
+from snapshots in any order (theory: SOD-SMD paper, exactness theorem). Without weights the modes of a non-uniform
+structure are biased, because they are mass-orthogonal, not L2-orthogonal.
+
+Maximum autocorrelation factors. maf() is the MAF transform of Switzer and Green (1984) with the snapshots as bands
+and the grid points as pixels: the pencil of the covariance of unit-lag differences against the field covariance.
+It is SMD with a first-difference gradient and unit weights, so SMD's first-order case is not new as a pencil.
 
 Derivative estimators (all linear in the data, so the pencil is exactly the operator quotient of the modes)
     'fd'         second-order finite differences (non-uniform lines allowed); a derivative is valid only where its
@@ -46,9 +58,9 @@ from scipy.linalg import eigh
 from scipy.signal import savgol_filter, savgol_coeffs
 
 __all__ = ['Grid', 'make_grid', 'DerivFields', 'smd_derivatives', 'SMDResult', 'smd_pencil', 'smd', 'smd_kc_scan',
-           'savgol_window_for_cutoff', 'savgol_cutoff']
+           'savgol_window_for_cutoff', 'savgol_cutoff', 'maf']
 
-_ORDER = {'grad': 1, 'second': 2, 'laplacian': 2}
+_ORDER = {'grad': 1, 'second': 2, 'laplacian': 2, 'plate': 2}
 
 
 # ----------------------------------------------------------------------------------------------- grid
@@ -145,7 +157,7 @@ def _dp(x, p):
     return D.tocsr()
 
 
-def _ops(grid, operator):
+def _ops(grid, operator, nu=0.3):
     """Sparse operators on the full flattened grid and their weights in the energy sum."""
     if grid.ndim == 1:
         x = grid.x
@@ -161,6 +173,10 @@ def _ops(grid, operator):
     Dxx, Dyy = sp.kron(Iy, D2x, format='csr'), sp.kron(D2y, Ix, format='csr')
     if operator == 'laplacian':
         return [(Dxx + Dyy).tocsr()], ['laplacian'], [1.0]
+    Dxy = sp.kron(D1y, D1x, format='csr')
+    if operator == 'plate':
+        return ([Dxx, Dxy, Dyy, (Dxx + Dyy).tocsr()], ['d2/dx2', 'd2/dxdy', 'd2/dy2', 'laplacian'],
+                [1.0 - nu, 2.0 * (1.0 - nu), 1.0 - nu, nu])
     return [Dxx, sp.kron(D1y, D1x, format='csr'), Dyy], ['d2/dx2', 'd2/dxdy', 'd2/dy2'], [1.0, 2.0, 1.0]
 
 
@@ -244,11 +260,11 @@ def _whittaker(Y, grid, kc, p):
 
 
 def smd_derivatives(W, grid, operator='grad', method='fd', kc=None, window=None, polyorder=3, penalty=None,
-                    smooth_field=False):
+                    smooth_field=False, nu=0.3):
     """Spatial derivative fields of full-field snapshots W for SMD (or for any other use).
 
     W        : (n_t, n) or (n_t, ny, nx); NaN = missing point (in addition to grid.mask)
-    operator : 'grad' | 'second' | 'laplacian'   (see module docstring)
+    operator : 'grad' | 'second' | 'laplacian' | 'plate'   (see module docstring; nu: Poisson ratio for 'plate')
     method   : 'fd' | 'savgol' | 'whittaker'
     kc       : cutoff wavenumber (rad per length unit) for 'savgol' (if window is None) and 'whittaker'
     window   : Savitzky-Golay window (odd); overrides kc
@@ -256,12 +272,12 @@ def smd_derivatives(W, grid, operator='grad', method='fd', kc=None, window=None,
     smooth_field : use the smoothed field (not the raw one) in the pencil, for 'savgol' and 'whittaker'
     """
     if operator not in _ORDER:
-        raise ValueError("operator must be 'grad', 'second' or 'laplacian'")
+        raise ValueError("operator must be 'grad', 'second', 'laplacian' or 'plate'")
     Y = _as_flat(W, grid)
     m = _ORDER[operator]
     mask = grid.mask.ravel() & np.all(np.isfinite(Y), axis=0)
     g2 = Grid(grid.shape, grid.x, grid.y, mask.reshape(grid.shape), np.where(mask.reshape(grid.shape), grid.w, 0.0))
-    ops, names, cw = _ops(grid, operator)
+    ops, names, cw = _ops(grid, operator, nu)
     info = {}
     F = np.where(mask, Y, np.nan)
     if method == 'fd':
@@ -300,7 +316,7 @@ def smd_derivatives(W, grid, operator='grad', method='fd', kc=None, window=None,
         def sg(B, axis, d, hh):
             return savgol_filter(B, window, polyorder, deriv=d, delta=hh, axis=axis, mode='interp')
         if grid.ndim == 1:
-            parts = {'grad': [(1,)], 'second': [(2,)], 'laplacian': [(2,)]}[operator]
+            parts = {'grad': [(1,)], 'second': [(2,)], 'laplacian': [(2,)], 'plate': [(2,)]}[operator]
             Gs = [sg(A, 1, d[0], hx) for d in parts]
             S = sg(A, 1, 0, hx)
         else:                                       # separable: derivative along one axis, smoothing along the other
@@ -310,6 +326,8 @@ def smd_derivatives(W, grid, operator='grad', method='fd', kc=None, window=None,
                 Gs = [d2(1, 0), d2(0, 1)]
             elif operator == 'laplacian':
                 Gs = [d2(2, 0) + d2(0, 2)]
+            elif operator == 'plate':
+                Gs = [d2(2, 0), d2(1, 1), d2(0, 2), d2(2, 0) + d2(0, 2)]
             else:
                 Gs = [d2(2, 0), d2(1, 1), d2(0, 2)]
             S = d2(0, 0)
@@ -334,6 +352,7 @@ class SMDResult:
     P     : covectors (n_t, r), P^T S_W P = I
     sw    : eigenvalues of S_W, descending (the field's weighted energy spectrum)
     rank  : number of directions kept
+    physical : True when density and stiffness were both given; then sqrt(mu) estimates natural frequencies (rad/s)
     """
     mu: np.ndarray
     k: np.ndarray
@@ -346,6 +365,12 @@ class SMDResult:
     grid: Grid
     operator: str
     method: str
+    physical: bool = False
+
+    @property
+    def omega(self):
+        """sqrt(mu): natural frequencies (rad/s) when the pencil is physically weighted, else a scale."""
+        return np.sqrt(np.where(self.mu > 0, self.mu, np.nan))
 
     def mode(self, i):
         """Mode i reshaped to the grid."""
@@ -362,7 +387,17 @@ def smd_pencil(SW, SG, rank=None, rtol=1e-10):
     return mu, T @ A, s
 
 
-def smd(W, grid=None, operator='grad', method='fd', center=True, rank=None, rtol=1e-10, derivs=None, **kw):
+def _field(a, grid, name):
+    if a is None:
+        return np.ones(grid.npts)
+    a = np.broadcast_to(np.asarray(a, float), grid.shape).ravel()
+    if np.any(a[grid.mask.ravel()] <= 0):
+        raise ValueError(f'{name} must be positive on the measured points')
+    return a
+
+
+def smd(W, grid=None, operator='grad', method='fd', center=True, rank=None, rtol=1e-10, derivs=None,
+        density=None, stiffness=None, **kw):
     """Smooth mode decomposition of full-field snapshots.
 
     W        : (n_t, n) on a line or (n_t, ny, nx) on a grid; NaN = missing point. Snapshot order is irrelevant.
@@ -373,6 +408,8 @@ def smd(W, grid=None, operator='grad', method='fd', center=True, rank=None, rtol
     center   : remove the mean snapshot first (static or mean-flow part)
     rank     : number of directions kept (default: numerical rank of S_W at rtol)
     derivs   : precomputed DerivFields (then operator/method/kw are taken from it)
+    density  : mass per unit length/area (scalar or grid-shaped), weights S_W (mass-orthonormal modes)
+    stiffness: T, EI or plate rigidity D (scalar or grid-shaped), weights S_G; with both, mu = omega^2
     """
     W = np.asarray(W, float)
     if grid is None:
@@ -385,15 +422,17 @@ def smd(W, grid=None, operator='grad', method='fd', center=True, rank=None, rtol
     # rim next to the edges of a mask; smoothing methods keep every measured point).
     fm, gv = g.mask.ravel(), d.valid
     wq = g.w.ravel()[gv]
+    rho, kap = _field(density, g, 'density')[gv], _field(stiffness, g, 'stiffness')[gv]
     Wf = d.F[:, gv]
-    SW = (Wf * wq) @ Wf.T
-    SG = sum(c * (Gk[:, gv] * wq) @ Gk[:, gv].T for c, Gk in zip(d.cw, d.G))
+    SW = (Wf * (wq * rho)) @ Wf.T
+    SG = sum(c * (Gk[:, gv] * (wq * kap)) @ Gk[:, gv].T for c, Gk in zip(d.cw, d.G))
     mu, P, s = smd_pencil(SW, SG, rank, rtol)
     Phi = np.full((g.npts, P.shape[1]), np.nan)
     Phi[fm] = d.F[:, fm].T @ P                      # modes on every measured point, normalized on the valid domain
     with np.errstate(invalid='ignore'):
         k = np.where(mu > 0, mu, np.nan) ** (1.0 / (2 * d.order))
-    return SMDResult(mu, k, Phi, SW @ P, P, s, P.shape[1], d.order, g, d.operator, d.method)
+    return SMDResult(mu, k, Phi, SW @ P, P, s, P.shape[1], d.order, g, d.operator, d.method,
+                     density is not None and stiffness is not None)
 
 
 def smd_kc_scan(W, grid, operator, method, kcs, rank=None, **kw):
@@ -404,3 +443,33 @@ def smd_kc_scan(W, grid, operator, method, kcs, rank=None, **kw):
         out.append(R.k)
     n = min(len(r) for r in out)
     return np.array([r[:n] for r in out])
+
+
+def maf(W, grid=None, center=True, rank=None, rtol=1e-10):
+    """Maximum autocorrelation factors (Switzer and Green 1984) of full-field snapshots, snapshots as bands.
+
+    Pencil: Sigma_D p = nu Sigma p, with Sigma = W W^T over the measured points and Sigma_D the sum over grid axes of
+    the covariance of unit-lag differences W(x + e) - W(x), over pairs of measured neighbours. Factors f = W^T p,
+    nu ascending (most autocorrelated first; autocorrelation 1 - nu/2 per axis for a stationary field).
+    Same as SMD with a forward-difference gradient, h = 1 and unit weights. Returns nu, factors (n_points, r), P."""
+    W = np.asarray(W, float)
+    if grid is None:
+        grid = make_grid(shape=W.shape[1:])
+    Y = _as_flat(W, grid)
+    mask = grid.mask.ravel() & np.all(np.isfinite(Y), axis=0)
+    if center:
+        Y = Y - np.where(mask, Y, 0.0).mean(axis=0, keepdims=True)   # remove the mean snapshot (masked columns: 0)
+    Y = np.where(mask, Y, 0.0)
+    idx = np.arange(grid.npts).reshape(grid.shape)
+    SD = 0.0
+    for ax in range(grid.ndim):
+        a = np.take(idx, np.arange(grid.shape[ax] - 1), axis=ax).ravel()
+        b = np.take(idx, np.arange(1, grid.shape[ax]), axis=ax).ravel()
+        ok = mask[a] & mask[b]
+        Dd = Y[:, b[ok]] - Y[:, a[ok]]
+        SD = SD + Dd @ Dd.T
+    Ym = Y[:, mask]
+    nu, P, _ = smd_pencil(Ym @ Ym.T, SD, rank, rtol)
+    F = np.full((grid.npts, P.shape[1]), np.nan)
+    F[mask] = Ym.T @ P
+    return nu, F, P

@@ -2,9 +2,10 @@
 %   (reference values in smd_reference.mat, written by python/tests/make_smd_reference.py). Run from this folder.
 clear; rows = [];
 ref = load('smd_reference.mat');
-names = {'b_fd', 'b_wh', 'b_sg', 'u_fd', 'u_wh', 'm_fd', 'm_lap', 'm_hes', 'm_sgg', 'h_wh', 'h_fd'};
+names = {'b_fd', 'b_wh', 'b_sg', 'u_fd', 'u_wh', 'm_fd', 'm_lap', 'm_hes', 'm_sgg', 'h_wh', 'h_fd', ...
+         'p_fd', 'p_sg', 'p_wh', 't_ph'};
 Gb = sod_smd_grid(ref.xb); Gu = sod_smd_grid(ref.xn); Gm = sod_smd_grid(ref.xm, ref.ym);
-Gh = sod_smd_grid(ref.xm, ref.ym, ~ref.hole);
+Gh = sod_smd_grid(ref.xm, ref.ym, ~ref.hole); Gt = sod_smd_grid(ref.xt);
 spec = struct( ...
     'b_fd', {{ref.Wb, Gb, 'second', 'fd', struct()}}, ...
     'b_wh', {{ref.Wn, Gb, 'second', 'whittaker', struct('kc', 3 * ref.bl(end), 'rank', 3)}}, ...
@@ -16,7 +17,11 @@ spec = struct( ...
     'm_hes', {{ref.Wm, Gm, 'second', 'savgol', struct('window', 9)}}, ...
     'm_sgg', {{ref.Wm, Gm, 'grad', 'savgol', struct('kc', 40)}}, ...
     'h_wh', {{ref.Wm, Gh, 'grad', 'whittaker', struct('kc', 60)}}, ...
-    'h_fd', {{ref.Wm, Gh, 'grad', 'fd', struct()}});
+    'h_fd', {{ref.Wm, Gh, 'grad', 'fd', struct()}}, ...
+    'p_fd', {{ref.Wm, Gm, 'plate', 'fd', struct('nu', 0.3)}}, ...
+    'p_sg', {{ref.Wm, Gm, 'plate', 'savgol', struct('window', 9, 'nu', 0.25)}}, ...
+    'p_wh', {{ref.Wm, Gm, 'plate', 'whittaker', struct('kc', 60, 'nu', 0.3)}}, ...
+    't_ph', {{ref.Wt, Gt, 'second', 'fd', struct('density', ref.rht, 'stiffness', ref.EIt, 'center', false)}});
 ok = true;
 for i = 1:numel(names)
     c = spec.(names{i});
@@ -33,7 +38,7 @@ for i = 1:numel(names)
     fprintf('%s  %-58s %10.2e  <= %.0e\n', pf(v1), ['Python agreement, ' names{i} ': SMD wavenumbers'], dk, tk);
     fprintf('%s  %-58s %10.2e  <= %.0e\n', pf(v2), ['Python agreement, ' names{i} ': modes (1 - MAC)'], dm, tm);
     if isfield(ref, [names{i} '_G1'])
-        W0 = c{1} - mean(c{1}, 1, 'omitnan');
+        W0 = c{1} - mean(c{1}, 1, 'omitnan') * (~isfield(c{5}, 'center') || c{5}.center);
         D = sod_smd_derivs(W0, c{2}, c{3}, c{4}, c{5});
         g = D.Gk{1}(1:5, :); g(isnan(g)) = 0; gp = ref.([names{i} '_G1']);
         dg = max(abs(g(:) - gp(:))) / max(abs(gp(:)));
@@ -55,6 +60,18 @@ e = max(abs(K(1, :).' ./ bl - 1)); v = e <= 1e-2; ok = ok && v;
 fprintf('%s  %-58s %10.2e  <= 1e-02\n', pf(v), '0.5% noise, whittaker kc = 3 beta_3: k error', e);
 e = max(abs(K(2, :) ./ K(1, :) - 1)); v = e <= 1e-2; ok = ok && v;
 fprintf('%s  %-58s %10.2e  <= 1e-02\n', pf(v), '0.5% noise, whittaker kc 3 -> 6 beta_3 moves k by', e);
+% physical weighting, non-uniform beam: omega against the Galerkin reference
+Rt = sod_smd(ref.Wt, Gt, 'second', 'fd', struct('density', ref.rht, 'stiffness', ref.EIt, 'center', false));
+e = max(abs(Rt.omega(:) ./ ref.omega_t(:) - 1)); v = e <= 1e-3; ok = ok && v;
+fprintf('%s  %-58s %10.2e  <= 1e-03\n', pf(v), 'non-uniform beam, physical weights: omega_SMD = omega', e);
+% MAF (Switzer-Green) against Python, complete and holed grids
+for c = {{'maf', Gm}, {'mafh', Gh}}
+    [nu, F] = sod_smd_maf(ref.Wm, c{1}{2}); F(isnan(F)) = 0; Fp = ref.([c{1}{1} '_F']);
+    e1 = max(abs(nu(:) ./ ref.([c{1}{1} '_nu'])(:) - 1)); e2 = 0;
+    for j = 1:numel(nu), a = F(:, j); b = Fp(:, j); e2 = max(e2, 1 - (a.' * b)^2 / ((a.' * a) * (b.' * b))); end
+    v = e1 <= 1e-8 && e2 <= 1e-10; ok = ok && v;
+    fprintf('%s  %-58s %10.2e  <= 1e-08\n', pf(v), ['Python agreement, ' c{1}{1} ': values and factors'], max(e1, e2));
+end
 if ok, fprintf('\nALL CHECKS PASSED\n'); else, fprintf('\nSOME CHECKS FAILED\n'); end
 
 function s = pf(v), if v, s = 'PASS'; else, s = 'FAIL'; end, end

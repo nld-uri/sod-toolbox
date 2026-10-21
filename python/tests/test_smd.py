@@ -103,5 +103,42 @@ v = d1.valid
 check('masked: whittaker d/dx of mode (1,1) at measured points (rel max err)',
       np.max(np.abs(d1.G[0][0, v] - ex[v])) / np.max(np.abs(ex)), 1e-2)
 
+# ---------------------------------------------------------------- 7. physical weighting: non-uniform beam (0.3.0)
+from scipy.linalg import eigh as _eigh
+EIf, rhof = (lambda x: 1 - 0.8 * x), (lambda x: 1 - 0.6 * x)     # tapered pinned-pinned beam, L = 1
+xq, wq = np.polynomial.legendre.leggauss(600); xq = (xq + 1) / 2; wq = wq / 2
+jj = np.arange(1, 81) * np.pi; Sq = np.sin(np.outer(xq, jj))
+Mg = (Sq * (wq * rhof(xq))[:, None]).T @ Sq; Kg = (Sq * jj ** 2 * (wq * EIf(xq))[:, None]).T @ (Sq * jj ** 2)
+w2, Cg = _eigh(Kg, Mg)                                           # Galerkin reference (independent of the fd operator)
+xn = np.linspace(0, 1, 401); gn = st.make_grid(x=xn); Pn = np.sin(np.outer(xn, jj)) @ Cg[:, :5]
+Wn5 = rng.standard_normal((5, 5)) @ Pn.T                          # as many snapshots as modes (no centring)
+Rph = st.smd(Wn5, gn, 'second', 'fd', center=False, density=rhof(xn), stiffness=EIf(xn))
+check('non-uniform beam, physical weights: omega_SMD = omega (5 snapshots)', np.max(np.abs(Rph.omega / np.sqrt(w2[:5]) - 1)), 1e-3)
+check('non-uniform beam, physical weights: modes (1 - MAC)', max(1 - mac(Rph.Phi[:, i], Pn[:, i]) for i in range(5)), 1e-6)
+Run = st.smd(Wn5, gn, 'second', 'fd', center=False)
+check('FC non-uniform beam, unit weights: modes not L2-orthogonal, MAC defect', max(1 - mac(Run.Phi[:, i], Pn[:, i]) for i in range(5)), 1e-3, must_fail=True)
+
+# ---------------------------------------------------------------- 8. simply supported plate: plate, Hessian, Laplacian
+ap, bp = 1.0, 0.6
+xp, yp = np.linspace(0, ap, 61), np.linspace(0, bp, 41); gp = st.make_grid(x=xp, y=yp)
+mnp = [(1, 1), (2, 1), (1, 2), (3, 1)]
+Mp = np.stack([np.outer(np.sin(n * np.pi * yp / bp), np.sin(m * np.pi * xp / ap)).ravel() for m, n in mnp], 1)
+kp = np.array([np.pi * np.hypot(m / ap, n / bp) for m, n in mnp]); op = np.argsort(kp)
+Wp = (coords(30, 4) @ Mp.T).reshape(30, len(yp), len(xp))
+for opn in ('plate', 'second', 'laplacian'):
+    Rpl = st.smd(Wp, gp, opn, 'fd')
+    check(f'SS plate, {opn}: k = pi sqrt((m/a)^2 + (n/b)^2)', np.max(np.abs(Rpl.k / kp[op] - 1)), 3e-3)
+
+# ---------------------------------------------------------------- 9. MAF (Switzer-Green) = SMD with forward differences, unit weights
+nuf, Ff, Pf = st.maf(Wm, gm)
+Wc0 = (Wm - Wm.mean(0)).reshape(50, -1)
+idx = np.arange(gm.npts).reshape(gm.shape)
+SD = sum((lambda a, b: (Wc0[:, b] - Wc0[:, a]) @ (Wc0[:, b] - Wc0[:, a]).T)(
+    np.take(idx, np.arange(gm.shape[ax] - 1), axis=ax).ravel(), np.take(idx, np.arange(1, gm.shape[ax]), axis=ax).ravel())
+    for ax in (0, 1))
+mu_fw, _, _ = st.smd_pencil(Wc0 @ Wc0.T, SD)
+check('MAF values equal the forward-difference SMD pencil (built independently)', np.max(np.abs(nuf / mu_fw - 1)), 1e-10)
+check('MAF factors match SMD grad modes (1 - MAC), membrane', max(1 - mac(Ff[:, i], Rm.Phi[:, i]) for i in range(4)), 1e-4)
+
 print(f'\n{sum(rows)}/{len(rows)} checks passed')
 sys.exit(0 if all(rows) else 1)

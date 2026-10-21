@@ -20,4 +20,4 @@ from .residual import *      # noqa: F401,F403
 from .smd import *           # noqa: F401,F403
 from . import systems, plotting  # noqa: F401
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'

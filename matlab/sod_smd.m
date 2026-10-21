@@ -5,10 +5,13 @@ function R = sod_smd(W, G, operator, method, opts)
 %   Mech. Syst. Signal Process. 200 (2023) 110541). Snapshot order, spacing and rate are irrelevant.
 %   W        : nt x n (line) or nt x ny x nx (grid); NaN = missing point
 %   G        : grid from SOD_SMD_GRID (default: unit spacing, complete)
-%   operator : 'grad' (strings, membranes, flows), 'second' (beams; Hessian on a grid, plates), 'laplacian'
+%   operator : 'grad' (strings, membranes, flows), 'second' (beams; Hessian on a grid), 'laplacian',
+%              'plate' (Kirchhoff bending energy, Poisson ratio opts.nu)
 %   method   : 'fd' | 'savgol' | 'whittaker'   (see SOD_SMD_DERIVS; opts.kc, opts.window, ...)
 %   opts     : center (true: remove the mean snapshot), rank ([] = numerical rank at rtol), rtol (1e-10),
-%              derivs (precomputed output of SOD_SMD_DERIVS), plus the SOD_SMD_DERIVS options
+%              derivs (precomputed output of SOD_SMD_DERIVS), plus the SOD_SMD_DERIVS options;
+%              density (mass per length/area, scalar or field-shaped) weights S_W; stiffness (T, EI or D)
+%              weights S_G; with both, mu = omega^2 and R.omega = sqrt(mu) (rad/s)
 %   Pencil   : S_G p = mu S_W p, S_W = W diag(w) W', S_G = sum_k cw_k G_k diag(w) G_k' over the points where
 %              the derivative is valid; p' S_W p = 1; mu ascending (smoothest first).
 %   R fields : mu (||D phi||^2/||phi||^2), k (wavenumbers mu^(1/(2m))), Phi (npts x r modes, unit weighted norm,
@@ -26,11 +29,13 @@ if ~isfield(opts, 'rtol'), opts.rtol = 1e-10; end
 if opts.center, W = W - mean(W, 1, 'omitnan'); end
 if isfield(opts, 'derivs') && ~isempty(opts.derivs), D = opts.derivs; else, D = sod_smd_derivs(W, G, operator, method, opts); end
 w = G.w; if numel(G.shape) == 2, w = w.'; end
-w = w(:); gv = D.valid; wq = w(gv).';
+w = w(:); gv = D.valid;
+rho = pfield(opts, 'density', G); kap = pfield(opts, 'stiffness', G);
+wq = (w(gv) .* rho(gv)).'; wk = (w(gv) .* kap(gv)).';
 Wf = D.F(:, gv);
 SW = (Wf .* wq) * Wf.';
 SG = zeros(size(SW));
-for k = 1:numel(D.Gk), Gv = D.Gk{k}(:, gv); SG = SG + D.cw(k) * (Gv .* wq) * Gv.'; end
+for k = 1:numel(D.Gk), Gv = D.Gk{k}(:, gv); SG = SG + D.cw(k) * (Gv .* wk) * Gv.'; end
 SW = (SW + SW.') / 2; SG = (SG + SG.') / 2;
 [U, s] = eig(SW, 'vector'); [s, o] = sort(s, 'descend'); U = U(:, o);
 if isempty(opts.rank), r = sum(s > opts.rtol * s(1)); else, r = opts.rank; end
@@ -43,4 +48,18 @@ Phi(D.mask, :) = D.F(:, D.mask).' * P;
 R.mu = mu; R.k = mu .^ (1 / (2 * D.order)); R.k(mu <= 0) = NaN;
 R.Phi = Phi; R.C = SW * P; R.P = P; R.sw = s; R.rank = r; R.order = D.order; R.grid = G;
 R.operator = D.operator; R.method = D.method;
+R.physical = isfield(opts, 'density') && isfield(opts, 'stiffness');
+R.omega = sqrt(mu); R.omega(mu <= 0) = NaN;
+end
+
+function a = pfield(opts, name, G)
+%PFIELD  Pointwise weight (density or stiffness) flattened like the field (x fastest); ones if absent.
+n = prod(G.shape);
+if ~isfield(opts, name) || isempty(opts.(name)), a = ones(n, 1); return, end
+a = opts.(name);
+if isscalar(a), a = a * ones(n, 1); return, end
+if numel(G.shape) == 2, a = reshape(a, G.shape).'; end
+a = a(:);
+m = G.mask; if numel(G.shape) == 2, m = m.'; end
+if any(a(m(:)) <= 0), error('%s must be positive on the measured points', name); end
 end

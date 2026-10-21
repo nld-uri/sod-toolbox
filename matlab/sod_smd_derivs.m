@@ -6,6 +6,7 @@ function D = sod_smd_derivs(W, G, operator, method, opts)
 %   operator : 'grad'      (m = 1) d/dx on a line, [d/dx, d/dy] on a grid     strings, membranes, flows
 %              'second'    (m = 2) d2/dx2 on a line, Hessian [xx, xy, yy] on a grid (xy weighted 2)  beams, plates
 %              'laplacian' (m = 2) d2/dx2 on a line, d2/dx2 + d2/dy2 on a grid
+%              'plate'     (m = 2) Kirchhoff bending energy with Poisson ratio opts.nu (default 0.3)
 %   method   : 'fd'        second-order finite differences; valid only where the whole stencil is measured
 %              'savgol'    Savitzky-Golay local polynomial fits (uniform, complete grids); opts.window, or opts.kc
 %                          with the window chosen from the MEASURED half-gain cutoff of the smoothing filter
@@ -20,17 +21,17 @@ function D = sod_smd_derivs(W, G, operator, method, opts)
 if nargin < 3 || isempty(operator), operator = 'grad'; end
 if nargin < 4 || isempty(method), method = 'fd'; end
 if nargin < 5, opts = struct(); end
-dflt = struct('kc', [], 'window', [], 'polyorder', 3, 'penalty', [], 'smooth_field', false);
+dflt = struct('kc', [], 'window', [], 'polyorder', 3, 'penalty', [], 'smooth_field', false, 'nu', 0.3);
 f = fieldnames(dflt);
 for i = 1:numel(f), if ~isfield(opts, f{i}), opts.(f{i}) = dflt.(f{i}); end, end
-m = struct('grad', 1, 'second', 2, 'laplacian', 2); 
-if ~isfield(m, operator), error('operator must be grad, second or laplacian'); end
+m = struct('grad', 1, 'second', 2, 'laplacian', 2, 'plate', 2);
+if ~isfield(m, operator), error('operator must be grad, second, laplacian or plate'); end
 m = m.(operator);
 Y = flat(W, G);
 nt = size(Y, 1); npts = size(Y, 2);
 mask = G.mask; if numel(G.shape) == 2, mask = mask.'; end
 mask = mask(:) & all(isfinite(Y), 1).';
-[ops, names, cw] = buildops(G, operator);
+[ops, names, cw] = buildops(G, operator, opts.nu);
 D.info = struct();
 F = Y; F(:, ~mask) = NaN;
 switch method
@@ -88,6 +89,7 @@ switch method
             switch operator
                 case 'grad', Gk = {op2(1, 0), op2(0, 1)};
                 case 'laplacian', Gk = {op2(2, 0) + op2(0, 2)};
+                case 'plate', Gk = {op2(2, 0), op2(1, 1), op2(0, 2), op2(2, 0) + op2(0, 2)};
                 otherwise, Gk = {op2(2, 0), op2(1, 1), op2(0, 2)};
             end
             S = op2(0, 0);
@@ -116,7 +118,7 @@ function ok = isuniform(x)
 d = diff(x); ok = (max(d) - min(d)) <= 1e-9 * abs(mean(d));
 end
 
-function [ops, names, cw] = buildops(G, operator)
+function [ops, names, cw] = buildops(G, operator, nu)
 if numel(G.shape) == 1
     if strcmp(operator, 'grad'), ops = {d1(G.x)}; names = {'d/dx'}; else, ops = {d2(G.x)}; names = {'d2/dx2'}; end
     cw = 1; return
@@ -127,6 +129,10 @@ switch operator
         ops = {kron(Iy, d1(G.x)), kron(d1(G.y), Ix)}; names = {'d/dx', 'd/dy'}; cw = [1 1];
     case 'laplacian'
         ops = {kron(Iy, d2(G.x)) + kron(d2(G.y), Ix)}; names = {'laplacian'}; cw = 1;
+    case 'plate'   % Kirchhoff bending energy: (1-nu)(xx^2 + 2 xy^2 + yy^2) + nu (xx + yy)^2
+        Dxx = kron(Iy, d2(G.x)); Dyy = kron(d2(G.y), Ix);
+        ops = {Dxx, kron(d1(G.y), d1(G.x)), Dyy, Dxx + Dyy};
+        names = {'d2/dx2', 'd2/dxdy', 'd2/dy2', 'laplacian'}; cw = [1 - nu, 2 * (1 - nu), 1 - nu, nu];
     otherwise
         ops = {kron(Iy, d2(G.x)), kron(d1(G.y), d1(G.x)), kron(d2(G.y), Ix)};
         names = {'d2/dx2', 'd2/dxdy', 'd2/dy2'}; cw = [1 2 1];

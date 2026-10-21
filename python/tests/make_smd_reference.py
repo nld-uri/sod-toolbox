@@ -22,6 +22,14 @@ M = np.stack([np.outer(np.sin(n * np.pi * ym / bm), np.sin(m * np.pi * xm / a)).
 Wm = (coords(40, 4) @ M.T).reshape(40, len(ym), len(xm))
 hole = np.hypot(*np.meshgrid(xm - 0.6, ym - 0.35)) < 0.08
 
+xq, wq = np.polynomial.legendre.leggauss(400); xq = (xq + 1) / 2; wq = wq / 2   # tapered pinned-pinned beam
+jj = np.arange(1, 61) * np.pi; Sq = np.sin(np.outer(xq, jj))
+EIq, rhq = 1 - 0.8 * xq, 1 - 0.6 * xq
+w2, Cg = __import__('scipy.linalg', fromlist=['eigh']).eigh((Sq * jj ** 2 * (wq * EIq)[:, None]).T @ (Sq * jj ** 2),
+                                                          (Sq * (wq * rhq)[:, None]).T @ Sq)
+xt = np.linspace(0, 1, 201); EIt, rht = 1 - 0.8 * xt, 1 - 0.6 * xt
+Wt = rng.standard_normal((6, 4)) @ (np.sin(np.outer(xt, jj)) @ Cg[:, :4]).T
+gt = st.make_grid(x=xt)
 gb, gu, gm, gh = st.make_grid(x=xb), st.make_grid(x=xn), st.make_grid(x=xm, y=ym), st.make_grid(x=xm, y=ym, mask=~hole)
 cases = {
     'b_fd':   (Wb, gb, 'second', 'fd', {}),
@@ -35,16 +43,24 @@ cases = {
     'm_sgg':  (Wm, gm, 'grad', 'savgol', {'kc': 40.0}),
     'h_wh':   (Wm, gh, 'grad', 'whittaker', {'kc': 60.0}),
     'h_fd':   (Wm, gh, 'grad', 'fd', {}),
+    'p_fd':   (Wm, gm, 'plate', 'fd', {'nu': 0.3}),
+    'p_sg':   (Wm, gm, 'plate', 'savgol', {'window': 9, 'nu': 0.25}),
+    'p_wh':   (Wm, gm, 'plate', 'whittaker', {'kc': 60.0, 'nu': 0.3}),
+    't_ph':   (Wt, gt, 'second', 'fd', {'density': rht, 'stiffness': EIt, 'center': False}),
 }
-ref = dict(xb=xb, Wb=Wb, Wn=Wn, xn=xn, Wu=Wu, xm=xm, ym=ym, Wm=Wm, hole=hole, bl=bl)
+ref = dict(xb=xb, Wb=Wb, Wn=Wn, xn=xn, Wu=Wu, xm=xm, ym=ym, Wm=Wm, hole=hole, bl=bl, xt=xt, Wt=Wt, EIt=EIt, rht=rht,
+           omega_t=np.sqrt(w2[:4]))
 for name, (W, g, op, meth, kw) in cases.items():
     rank = kw.pop('rank', None)
-    R = st.smd(W, g, op, meth, rank=rank, **kw)
+    sk = {k: kw.pop(k) for k in ('density', 'stiffness', 'center') if k in kw}
+    R = st.smd(W, g, op, meth, rank=rank, **sk, **kw)
     ref[name + '_k'] = R.k; ref[name + '_Phi'] = np.nan_to_num(R.Phi, nan=0.0)
-    d = st.smd_derivatives(W - np.nanmean(W, 0), g, op, meth, **kw)
+    d = st.smd_derivatives(W - np.nanmean(W, 0) * sk.get('center', True), g, op, meth, **kw)
     ref[name + '_valid'] = d.valid
     if name in ('b_sg', 'u_fd', 'm_sgg', 'h_wh'):           # derivative fields, first five snapshots
         ref[name + '_G1'] = np.nan_to_num(d.G[0][:5], nan=0.0)
     print(f'{name:6s} k = {np.round(R.k, 6)}')
+nu_maf, F_maf, _ = st.maf(Wm, gm); ref['maf_nu'] = nu_maf; ref['maf_F'] = F_maf
+nu_mh, F_mh, _ = st.maf(Wm, gh); ref['mafh_nu'] = nu_mh; ref['mafh_F'] = np.nan_to_num(F_mh, nan=0.0)
 savemat(os.path.join(HERE, '..', '..', 'matlab', 'smd_reference.mat'), ref, do_compression=True)
 print('written matlab/smd_reference.mat')
