@@ -22,6 +22,12 @@ For an undamped linear system whose modal coordinates are uncorrelated, the SOVs
 are `1/omega_i^2` and the smooth modes are the linear normal modes. Every variant
 below is this pencil. The options change only how the covariances are formed.
 
+SOD here is the temporal form: it smooths the coordinates in time. Its spatial dual,
+smooth mode decomposition (SMD; Li, Wanchoo, Shukla & Chelidze, MSSP 200 (2023) 110541),
+smooths the mode shapes in space and suits full-field data that are richer in space than
+in time; it is not part of this toolbox. A smooth mode of SOD is the shape paired with a
+temporally smooth coordinate, not a spatially smoothed shape.
+
 ## Rules the toolbox enforces
 
 - Modes and modal planes are recognised, paired and ordered by frequency or by

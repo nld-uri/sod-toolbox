@@ -59,7 +59,7 @@ symmetric generalized eigenproblem,
   \label{eq:sod}
 \end{equation}
 with the values $\mu_i$ in ascending order. The covectors $\psib_i$ define the
-smooth coordinates $\q=\X\Ps$; the smooth modes are $\Ph=\Sg_x\Ps$. The method
+smooth coordinates $\q=\X\Ps$; the smooth modes are $\Ph=\Sg_x\Ps$. SOD here is the temporal form: it smooths the coordinates in time. Its spatial dual, smooth mode decomposition (SMD)~\cite{Li2023}, smooths the mode shapes in space and suits full-field data that are richer in space than in time; it is not part of this toolbox. A smooth mode of SOD is the shape paired with a temporally smooth coordinate, not a spatially smoothed shape. The method
 was introduced for vibration mode identification by Chelidze and
 Zhou~\cite{Chelidze2006} and for randomly excited systems by Farooq and
 Feeny~\cite{Farooq2008}.
@@ -600,6 +600,7 @@ $\Sg_x\Ps$), \code{Q} (coordinates for the samples used). Python also offers
 \bibitem{Schmid2010} P.~J. Schmid, Dynamic mode decomposition of numerical and
   experimental data, \emph{Journal of Fluid Mechanics} 656 (2010) 5--28,
   doi:10.1017/S0022112010001217.
+\bibitem{Li2023} H.-W.-X.~Li, P.~Wanchoo, A.~Shukla, D.~Chelidze, Smooth mode decomposition: Theory and its applications in full-field output-only modal analysis, \emph{Mechanical Systems and Signal Processing} 200 (2023) 110541, doi:10.1016/j.ymssp.2023.110541.
 \end{thebibliography}
 
 \end{document}
