@@ -65,8 +65,8 @@ Rt = sod_smd(ref.Wt, Gt, 'second', 'fd', struct('density', ref.rht, 'stiffness',
 e = max(abs(Rt.omega(:) ./ ref.omega_t(:) - 1)); v = e <= 1e-3; ok = ok && v;
 fprintf('%s  %-58s %10.2e  <= 1e-03\n', pf(v), 'non-uniform beam, physical weights: omega_SMD = omega', e);
 % MAF (Switzer-Green) against Python, complete and holed grids
-for c = {{'maf', Gm}, {'mafh', Gh}}
-    [nu, F] = sod_smd_maf(ref.Wm, c{1}{2}); F(isnan(F)) = 0; Fp = ref.([c{1}{1} '_F']);
+for c = {{'maf', Gm, 'xy'}, {'mafh', Gh, 'xy'}, {'mafy', Gh, 'y'}}
+    [nu, F] = sod_smd_maf(ref.Wm, c{1}{2}, struct('axes', c{1}{3})); F(isnan(F)) = 0; Fp = ref.([c{1}{1} '_F']);
     e1 = max(abs(nu(:) ./ ref.([c{1}{1} '_nu'])(:) - 1)); e2 = 0;
     for j = 1:numel(nu), a = F(:, j); b = Fp(:, j); e2 = max(e2, 1 - (a.' * b)^2 / ((a.' * a) * (b.' * b))); end
     v = e1 <= 1e-8 && e2 <= 1e-10; ok = ok && v;

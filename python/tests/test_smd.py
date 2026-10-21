@@ -139,6 +139,11 @@ SD = sum((lambda a, b: (Wc0[:, b] - Wc0[:, a]) @ (Wc0[:, b] - Wc0[:, a]).T)(
 mu_fw, _, _ = st.smd_pencil(Wc0 @ Wc0.T, SD)
 check('MAF values equal the forward-difference SMD pencil (built independently)', np.max(np.abs(nuf / mu_fw - 1)), 1e-10)
 check('MAF factors match SMD grad modes (1 - MAC), membrane', max(1 - mac(Ff[:, i], Rm.Phi[:, i]) for i in range(4)), 1e-4)
+nux, _, _ = st.maf(Wm, gm, axes='x')                          # single horizontal lag (Green et al. 1988)
+SDx = (lambda a, b: (Wc0[:, b] - Wc0[:, a]) @ (Wc0[:, b] - Wc0[:, a]).T)(idx[:, :-1].ravel(), idx[:, 1:].ravel())
+mu_x, _, _ = st.smd_pencil(Wc0 @ Wc0.T, SDx)
+check('single-lag MAF equals the d/dx forward-difference pencil', np.max(np.abs(nux / mu_x - 1)), 1e-10)
+check('FC single-lag MAF differs from two-lag MAF', np.max(np.abs(nux / nuf - 1)), 1e-2, must_fail=True)
 
 print(f'\n{sum(rows)}/{len(rows)} checks passed')
 sys.exit(0 if all(rows) else 1)

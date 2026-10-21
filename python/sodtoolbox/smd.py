@@ -445,13 +445,15 @@ def smd_kc_scan(W, grid, operator, method, kcs, rank=None, **kw):
     return np.array([r[:n] for r in out])
 
 
-def maf(W, grid=None, center=True, rank=None, rtol=1e-10):
+def maf(W, grid=None, center=True, rank=None, rtol=1e-10, axes=None):
     """Maximum autocorrelation factors (Switzer and Green 1984) of full-field snapshots, snapshots as bands.
 
     Pencil: Sigma_D p = nu Sigma p, with Sigma = W W^T over the measured points and Sigma_D the sum over grid axes of
     the covariance of unit-lag differences W(x + e) - W(x), over pairs of measured neighbours. Factors f = W^T p,
     nu ascending (most autocorrelated first; autocorrelation 1 - nu/2 per axis for a stationary field).
-    Same as SMD with a forward-difference gradient, h = 1 and unit weights. Returns nu, factors (n_points, r), P."""
+    axes: lags summed, 'xy' (default; SMD with a forward-difference gradient, h = 1, unit weights), 'x' or 'y'
+    (a single lag, as in Green et al. 1988), or a tuple of array axes of the grid shape (ny, nx).
+    Returns nu, factors (n_points, r), P."""
     W = np.asarray(W, float)
     if grid is None:
         grid = make_grid(shape=W.shape[1:])
@@ -462,7 +464,16 @@ def maf(W, grid=None, center=True, rank=None, rtol=1e-10):
     Y = np.where(mask, Y, 0.0)
     idx = np.arange(grid.npts).reshape(grid.shape)
     SD = 0.0
-    for ax in range(grid.ndim):
+    if axes is None or axes == 'xy':
+        axes = tuple(range(grid.ndim))
+    elif isinstance(axes, str):
+        if grid.ndim == 1 and axes == 'x':
+            axes = (0,)
+        elif grid.ndim == 2 and axes in ('x', 'y'):
+            axes = (1,) if axes == 'x' else (0,)
+        else:
+            raise ValueError("axes must be 'xy', 'x', 'y' (grid) or a tuple of array axes")
+    for ax in axes:
         a = np.take(idx, np.arange(grid.shape[ax] - 1), axis=ax).ravel()
         b = np.take(idx, np.arange(1, grid.shape[ax]), axis=ax).ravel()
         ok = mask[a] & mask[b]

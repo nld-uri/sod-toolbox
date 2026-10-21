@@ -62,5 +62,6 @@ for name, (W, g, op, meth, kw) in cases.items():
     print(f'{name:6s} k = {np.round(R.k, 6)}')
 nu_maf, F_maf, _ = st.maf(Wm, gm); ref['maf_nu'] = nu_maf; ref['maf_F'] = F_maf
 nu_mh, F_mh, _ = st.maf(Wm, gh); ref['mafh_nu'] = nu_mh; ref['mafh_F'] = np.nan_to_num(F_mh, nan=0.0)
+nu_my, F_my, _ = st.maf(Wm, gh, axes='y'); ref['mafy_nu'] = nu_my; ref['mafy_F'] = np.nan_to_num(F_my, nan=0.0)
 savemat(os.path.join(HERE, '..', '..', 'matlab', 'smd_reference.mat'), ref, do_compression=True)
 print('written matlab/smd_reference.mat')

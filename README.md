@@ -146,14 +146,15 @@ these are the spatial counterparts of SOD's boundary terms. With density and sti
 pinned-pinned beam gives its frequencies to 1.3e-4 from five snapshots, one per mode.
 
 The pencil is not new as such: `maf` is the maximum autocorrelation factor transform of Switzer and Green (1984)
-with snapshots as bands, which equals SMD with a forward-difference gradient and unit weights.
+with snapshots as bands, which equals SMD with a forward-difference gradient and unit weights
+(`axes='xy'`); `axes='x'` or `'y'` gives the single-lag form of Green et al. (1988).
 
 ## Tests
 
 - `python/tests/test_sod.py`: 15 self-contained checks of known properties.
-- `python/tests/test_smd.py`: 30 checks of SMD, six of them failure controls that must fail.
+- `python/tests/test_smd.py`: 32 checks of SMD, seven of them failure controls that must fail.
 - `python/tests/make_smd_reference.py` writes `matlab/smd_reference.mat`; `matlab/test_smd.m`
-  checks the MATLAB port against it (42 checks; MATLAB R2026b, Python 3.11).
+  checks the MATLAB port against it (43 checks; MATLAB R2026b, Python 3.11).
 - `python/tests/make_reference.py` writes `matlab/sod_reference.mat`;
   `matlab/test_sod.m` checks the MATLAB port against it (32 checks).
 

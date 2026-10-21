@@ -499,7 +499,7 @@ For a sinusoidal shape $\mu=k^{2m}$, with $m$ the operator order; $k=\mu^{1/(2m)
 \begin{itemize}
 \item Operators: \code{'grad'} ($m=1$; strings, membranes, flows), \code{'second'} ($m=2$; beams, and the Hessian with weight 2 on the mixed term on grids), \code{'laplacian'} ($m=2$), \code{'plate'} ($m=2$; Kirchhoff bending energy $(1-\nu)(w_{xx}^2+2w_{xy}^2+w_{yy}^2)+\nu(\nabla^2w)^2$, Poisson ratio \code{nu}).
 \item Physical weights: \code{density} (mass per length or area) multiplies the weights of $\symbf S_W$ and \code{stiffness} ($T$, $EI$ or the plate rigidity) those of $\symbf S_G$. For a self-adjoint structure matched by the operator, $\mu_i=\omega_i^2$ (\code{R.omega}) and the modes are mass-normalized, from any snapshots that span them. Unit weights bias the modes of non-uniform structures, which are mass-orthogonal, not $L^2$-orthogonal.
-\item \code{maf} is the maximum autocorrelation factor transform (Switzer and Green, 1984) with snapshots as bands: SMD with a forward-difference gradient and unit weights.
+\item \code{maf} is the maximum autocorrelation factor transform (Switzer and Green, 1984) with snapshots as bands: SMD with a forward-difference gradient and unit weights (\code{axes='xy'}), or with a single directional difference (\code{axes='x'} or \code{'y'}, the single lag of Green et al., 1988).
 \item Derivative estimators: \code{'fd'} (second-order finite differences, also on non-uniform lines; a derivative is kept only where its stencil is measured), \code{'whittaker'} (penalized smoothing with gain $1/(1+(k/k_c)^{2p})$; fills masked points), \code{'savgol'} (local polynomials on complete uniform grids; the window is set from the measured half-gain cutoff).
 \item Both integrals run over the points where the derivative is valid. Snapshot order, spacing and rate are never used.
 \item Cutoffs: in the beam test with 0.5\% noise, Whittaker needed $k_c$ about 3--6 times and Savitzky--Golay about 8 times the largest wavenumber of interest. Scan $k_c$ with \code{smd\_kc\_scan} and keep a value where the wavenumbers do not move.
@@ -510,8 +510,8 @@ correlated snapshots give identical results. With the operator matched to the st
 domain, strings, cantilever beams and membranes return their modes and wavenumbers to discretization error.
 A hole in the field, a partial field of view or a mismatched operator biases them. These are the spatial
 counterparts of SOD's boundary terms. With physical weights a tapered pinned--pinned beam returns its
-frequencies to $1.3\times10^{-4}$ from five snapshots (\code{python/tests/test\_smd.py}, 30 checks;
-\code{matlab/test\_smd.m}, 42 checks including agreement with Python).
+frequencies to $1.3\times10^{-4}$ from five snapshots (\code{python/tests/test\_smd.py}, 32 checks;
+\code{matlab/test\_smd.m}, 43 checks including agreement with Python).
 
 \section{Reference}\label{sec:reference}
 
