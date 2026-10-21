@@ -1,0 +1,16 @@
+<section id="smd-pencil" data-transition="fade" style="background:#F7F6F2;color:#132433;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 96px 160px;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:16px"><div style="width:40px;height:4px;background:#B4622A"></div><p style="font-size:26px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:#5B6168">Smooth mode decomposition</p></div>
+<h2 style="font-size:60px;font-weight:600;line-height:1.13;color:#132433">SOD transposed: smooth shapes, unordered snapshots</h2>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:44px">
+<img src="/_blob/df594b46dc3acc161b854929c3dd08dd" alt="S_G p = mu S_W p, S_W = W diag(rho w) W^T, S_G = sum_k c_k G_k diag(kappa w) G_k^T" style="width:1500px;height:62px;object-fit:contain">
+<img src="/_blob/de67d88bb50022c8846550de84b93a05" alt="phi = W^T p, mu = integral kappa (D phi)^2 / integral rho phi^2 = omega^2 for a matched structure; k = mu^(1/2m) with unit weights" style="width:1500px;height:100px;object-fit:contain">
+<ul style="font-size:38px;line-height:1.45;color:#132433;width:1500px">
+<li>Rows of W are snapshots, columns are points; G<sub>k</sub> are spatial derivative fields.</li>
+<li>Operator from the physics: gradient (strings, membranes, flows), second (beams), plate, Laplacian.</li>
+<li>Exact iff the true shapes are orthogonal in both the mass and the energy products.</li>
+</ul>
+</div>
+<p style="position:absolute;left:96px;bottom:56px;width:900px;font-size:24px;color:#5B6168">Nonlinear Dynamics Laboratory · SOD toolbox</p>
+<img src="/_blob/e495239556305b4430f844d60724d74c" alt="NLD" style="position:absolute;right:96px;bottom:48px;width:104px;height:40px;object-fit:contain">
+<aside>SMD (Li, Wanchoo, Shukla and Chelidze, MSSP 2023) solves the SOD pencil with snapshots in place of channels and spatial derivatives in place of velocities. It is a Rayleigh-Ritz projection of the structure&#x27;s mass-stiffness pencil onto the span of the snapshots, so snapshot order, timing and amplitudes do not enter. With density in S_W and stiffness in S_G, mu = omega^2 for a self-adjoint structure matched by the operator; with unit weights mu = k^(2m). The pencil itself is older: maximum autocorrelation factors (Switzer and Green 1984; Shapiro and Switzer 1989) and Hooker and Roberts (2016). The toolbox never forms S_W: it solves the pencil on the thin SVD of the weighted field.</aside>
+</section>

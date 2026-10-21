@@ -32,21 +32,19 @@ w = G.w; if numel(G.shape) == 2, w = w.'; end
 w = w(:); gv = D.valid;
 rho = pfield(opts, 'density', G); kap = pfield(opts, 'stiffness', G);
 wq = (w(gv) .* rho(gv)).'; wk = (w(gv) .* kap(gv)).';
-Wf = D.F(:, gv);
-SW = (Wf .* wq) * Wf.';
-SG = zeros(size(SW));
-for k = 1:numel(D.Gk), Gv = D.Gk{k}(:, gv); SG = SG + D.cw(k) * (Gv .* wk) * Gv.'; end
-SW = (SW + SW.') / 2; SG = (SG + SG.') / 2;
-[U, s] = eig(SW, 'vector'); [s, o] = sort(s, 'descend'); U = U(:, o);
+Wq = D.F(:, gv) .* sqrt(wq);            % S_W = Wq Wq', never formed (nt may be large)
+[U, sv] = svd(Wq, 'econ'); sv = diag(sv); s = sv .^ 2;   % thin SVD: leading left vectors span the data
 if isempty(opts.rank), r = sum(s > opts.rtol * s(1)); else, r = opts.rank; end
-T = U(:, 1:r) ./ sqrt(s(1:r)).';
-Hm = T.' * SG * T; Hm = (Hm + Hm.') / 2;
+T = U(:, 1:r) ./ sv(1:r).';
+Hm = zeros(r);
+for k = 1:numel(D.Gk), B = T.' * D.Gk{k}(:, gv); Hm = Hm + D.cw(k) * (B .* wk) * B.'; end
+Hm = (Hm + Hm.') / 2;
 [A, mu] = eig(Hm, 'vector'); [mu, o] = sort(mu); A = A(:, o);
 P = T * A;
 Phi = NaN(numel(w), r);
 Phi(D.mask, :) = D.F(:, D.mask).' * P;
 R.mu = mu; R.k = mu .^ (1 / (2 * D.order)); R.k(mu <= 0) = NaN;
-R.Phi = Phi; R.C = SW * P; R.P = P; R.sw = s; R.rank = r; R.order = D.order; R.grid = G;
+R.Phi = Phi; R.C = Wq * (Wq.' * P); R.P = P; R.sw = s; R.rank = r; R.order = D.order; R.grid = G;
 R.operator = D.operator; R.method = D.method;
 R.physical = isfield(opts, 'density') && isfield(opts, 'stiffness');
 R.omega = sqrt(mu); R.omega(mu <= 0) = NaN;

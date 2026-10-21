@@ -18,5 +18,13 @@
  "1044a4202e948c78da103e3f176d6a45": "assets/state_plane_deck.gif",
  "fca6d8e2a0efc9a47a6f27f120195b5e": "assets/backbone_tracking_deck.gif",
  "77b3bca76a452080a890dbb7623e547a": "assets/trend_extraction_deck.gif",
- "f121f285e57a8e6be341544a1af284d6": "assets/rayleigh_quotient_deck.gif"
+ "f121f285e57a8e6be341544a1af284d6": "assets/rayleigh_quotient_deck.gif",
+ "df594b46dc3acc161b854929c3dd08dd": "assets/eq_smd_pencil.svg",
+ "de67d88bb50022c8846550de84b93a05": "assets/eq_smd_rq.svg",
+ "e0f2816f7bf42580dbf6af91840d6363": "assets/ex05_smd_membrane.png",
+ "08d9b332b26ed9a001bc88880259dddb": "assets/ex06_smd_nonuniform_beam.png",
+ "100054dc460c23e80a6ea6c873232cdc": "assets/ex07_smd_noise.png",
+ "80fd4fd31ca59a2228e39844db718a10": "assets/ex08_smd_boundaries.png",
+ "66464cc57bb9b16fa0bc04074940eef2": "assets/ex09_smd_subnyquist.png",
+ "e24cbc79faf1eee3139823277c1832dc": "assets/ex10_smd_plate.png"
 }

@@ -49,4 +49,20 @@
 
 <p class="wp-block-paragraph">The toolbox also builds reduced-order models on smooth modes, linear normal modes, POD and MTA bases, with exact simulation, and a linear-core-plus-residual basis for nonlinear structures. It is the common code of the lab's SOD papers, now in preparation.</p>
 
+<p style="margin:40px 0 8px;font-size:13px;line-height:16px;letter-spacing:0.12em;text-transform:uppercase;font-weight:600;color:#5B6168"><span style="display:inline-block;width:24px;height:4px;background:#B4622A;vertical-align:middle;margin-right:10px"></span>Full-field data</p>
+
+<h2 class="wp-block-heading">Smooth mode decomposition: mode shapes and frequencies from snapshots in any order</h2>
+
+<p class="wp-block-paragraph">SMD transposes SOD. It combines snapshots instead of channels and uses spatial derivatives of the measured field instead of velocities, so it needs no time order, spacing or Nyquist rate. Choose the operator from the physics: gradient for strings, membranes and flows; second derivative for beams; the Kirchhoff energy for plates. With density and stiffness weights its values are the squared natural frequencies of the structure.</p>
+
+<figure style="margin:24px 0"><img decoding="async" src="https://raw.githubusercontent.com/nld-uri/sod-toolbox/main/docs/web/ex05_smd_membrane.jpg" alt="Eight membrane modes from SMD and their wavenumber errors from 200 and from 8 unordered snapshots" style="width:100%;height:auto;border:1px solid #DCD9D2"><figcaption style="font-size:14px;color:#5B6168;margin-top:8px">Eight snapshots give the first eight modes of a membrane; the remaining wavenumber error, 0.4% or less, is the central-difference bias.</figcaption></figure>
+
+<figure style="margin:24px 0"><img decoding="async" src="https://raw.githubusercontent.com/nld-uri/sod-toolbox/main/docs/web/ex06_smd_nonuniform_beam.jpg" alt="True and unit-weight SMD modes of a non-uniform beam, and the frequency error with physical weights against grid spacing" style="width:100%;height:auto;border:1px solid #DCD9D2"><figcaption style="font-size:14px;color:#5B6168;margin-top:8px">A beam whose mass triples along the span: unit weights bias the shapes; density and stiffness weights give the exact modes and the natural frequencies, with an error that falls as h².</figcaption></figure>
+
+<figure style="margin:24px 0"><img decoding="async" src="https://raw.githubusercontent.com/nld-uri/sod-toolbox/main/docs/web/ex09_smd_subnyquist.jpg" alt="Frequency error against sampling rate for SMD and SOD on a beam" style="width:100%;height:auto;border:1px solid #DCD9D2"><figcaption style="font-size:14px;color:#5B6168;margin-top:8px">Down to 0.035 times the highest natural frequency, and from 12 randomly timed snapshots, SMD reads all six frequencies to 2×10⁻⁴. SOD needs time-resolved data.</figcaption></figure>
+
+<figure style="margin:24px 0"><img decoding="async" src="https://raw.githubusercontent.com/nld-uri/sod-toolbox/main/docs/web/ex07_smd_noise.jpg" alt="Wavenumber error against smoothing cutoff for Whittaker and Savitzky-Golay derivatives at three noise levels" style="width:100%;height:auto;border:1px solid #DCD9D2"><figcaption style="font-size:14px;color:#5B6168;margin-top:8px">Noisy fields need regularized derivatives. Plain differences fail; Whittaker smoothing near 3 to 5 times the largest wavenumber restores the cantilever wavenumbers to below 1%.</figcaption></figure>
+
+<figure class="wp-block-table"><table><thead><tr><th>Your data</th><th>Use</th></tr></thead><tbody><tr><td>Clean full-field snapshots</td><td><code>smd(W, g, op, 'fd')</code></td></tr><tr><td>Noisy, or with holes</td><td><code>smd(W, g, op, 'whittaker', kc=...)</code>, choose <code>kc</code> with <code>smd_kc_scan</code></td></tr><tr><td>Known density and stiffness</td><td><code>smd(..., density=rho, stiffness=EI)</code>, frequencies in <code>R.omega</code></td></tr></tbody></table></figure>
+
 <hr class="wp-block-separator has-alpha-channel-opacity" />

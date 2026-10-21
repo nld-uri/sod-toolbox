@@ -4,16 +4,16 @@
 <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px"><div style="display:flex;flex-direction:row;gap:40px">
 <div style="flex:1;display:flex;flex-direction:column;gap:20px">
 <h3 style="font-size:44px;font-weight:600;color:#132433">Python</h3>
-<div data-text style="background:#EEEBE5;padding:32px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;line-height:1.6;color:#132433"><p>import sodtoolbox as st</p><p>R = st.sod(X, V)</p><p>Rs = st.state_sod(Y, Yd)</p><p>P = st.pair_state(Rs.Q, dt, wmax,</p><p>    Phi=Rs.Phi)</p></div>
-<p style="font-size:32px;color:#5B6168">test_sod.py: 15 checks</p>
+<div data-text style="background:#EEEBE5;padding:32px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;line-height:1.6;color:#132433"><p>import sodtoolbox as st</p><p>R = st.sod(X, V)</p><p>Rs = st.state_sod(Y, Yd)</p><p>P = st.pair_state(Rs.Q, dt, wmax,</p><p>    Phi=Rs.Phi)</p><p>S = st.smd(W, g, 'second', 'fd')</p></div>
+<p style="font-size:32px;color:#5B6168">test_sod.py: 15 checks · test_smd.py: 32</p>
 </div>
 <div style="flex:1;display:flex;flex-direction:column;gap:20px">
 <h3 style="font-size:44px;font-weight:600;color:#132433">MATLAB</h3>
-<div data-text style="background:#EEEBE5;padding:32px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;line-height:1.6;color:#132433"><p>R  = sod_decomp(X, V);</p><p>Rs = sod_state(Y, Yd);</p><p>P  = sod_pair_state(Rs.Q, dt, ...</p><p>     wmax, struct('Phi', Rs.Phi));</p><p> </p></div>
-<p style="font-size:32px;color:#5B6168">test_sod.m: 32 checks against Python</p>
+<div data-text style="background:#EEEBE5;padding:32px;font-family:'IBM Plex Mono', 'Courier New', monospace;font-size:30px;line-height:1.6;color:#132433"><p>R  = sod_decomp(X, V);</p><p>Rs = sod_state(Y, Yd);</p><p>P  = sod_pair_state(Rs.Q, dt, ...</p><p>     wmax, struct('Phi', Rs.Phi));</p><p>S  = sod_smd(W, G, 'second', 'fd');</p></div>
+<p style="font-size:32px;color:#5B6168">test_sod.m: 32 · test_smd.m: 43, against Python</p>
 </div>
 </div></div>
 <p style="position:absolute;left:96px;bottom:56px;width:900px;font-size:24px;color:#5B6168">Nonlinear Dynamics Laboratory · SOD toolbox</p>
 <img src="/_blob/e495239556305b4430f844d60724d74c" alt="NLD" style="position:absolute;right:96px;bottom:48px;width:104px;height:40px;object-fit:contain">
-<aside>Options of sod: V or dt with deriv ('central' step h, or 'gradient'), lag, center, scale, tol, k. Results: mu, freq, sov, Psi, Phi, Q. Python needs NumPy and SciPy; MATLAB needs no toolboxes. Manual: docs/manual/SOD_manual.pdf.</aside>
+<aside>Options of sod: V or dt with deriv ('central' step h, or 'gradient'), lag, center, scale, tol, k. Results: mu, freq, sov, Psi, Phi, Q. SMD: W snapshots x points (or x ny x nx), g from make_grid; options density, stiffness, method ('fd', 'whittaker', 'savgol'), kc; results mu, k, omega, Phi, C. Python needs NumPy and SciPy; MATLAB needs no toolboxes. Manual: docs/manual/SOD_manual.pdf.</aside>
 </section>

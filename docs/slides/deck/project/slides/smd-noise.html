@@ -1,0 +1,13 @@
+<section id="smd-noise" data-transition="fade" style="background:#F7F6F2;color:#132433;font-family:'IBM Plex Sans', Arial, sans-serif;padding:96px 96px 160px;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:16px"><div style="width:40px;height:4px;background:#B4622A"></div><p style="font-size:26px;font-weight:500;letter-spacing:3px;text-transform:uppercase;color:#5B6168">Smooth mode decomposition</p></div>
+<h2 style="font-size:60px;font-weight:600;line-height:1.13;color:#132433">Noisy fields: regularize derivatives, scan the cutoff</h2>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:28px">
+<div style="background:#FFFFFF;border:1px solid #DCD9D2;padding:16px;display:flex">
+<img src="/_blob/100054dc460c23e80a6ea6c873232cdc" alt="Example 7: median wavenumber error against cutoff for Whittaker and Savitzky-Golay at three noise levels" style="width:1320px;height:470px;object-fit:contain">
+</div>
+<p style="font-size:36px;line-height:1.4;color:#5B6168;width:1500px">Plain differences: errors of 4–20. Whittaker at its best cutoff: 8×10<sup>−4</sup> to 8×10<sup>−3</sup>; the best k<sub>c</sub> falls from 5 to 3 k<sub>max</sub> as noise grows.</p>
+</div>
+<p style="position:absolute;left:96px;bottom:56px;width:900px;font-size:24px;color:#5B6168">Nonlinear Dynamics Laboratory · SOD toolbox</p>
+<img src="/_blob/e495239556305b4430f844d60724d74c" alt="NLD" style="position:absolute;right:96px;bottom:48px;width:104px;height:40px;object-fit:contain">
+<aside>Example 7. Cantilever, three modes, 40 snapshots, 0.1, 0.5 and 2 percent white noise, medians of ten realizations. Plain finite differences: 3.8, 9.5, 20. Whittaker best: 8.0e-4 (kc 5.1 kmax), 2.8e-3 (3.4), 8.1e-3 (2.7). Savitzky-Golay best: 3.5e-3, 7.0e-3, 1.9e-2. Too low a cutoff attenuates the highest mode; too high lets noise in. On real data use smd_kc_scan and keep a cutoff where the wavenumbers do not move.</aside>
+</section>

@@ -99,7 +99,7 @@ either this pencil formed in a different way, or a rule for reading its output.
 Folder & Contents\\
 \midrule
 \code{python/sodtoolbox/} & Python package (NumPy, SciPy; Matplotlib for figures)\\
-\code{python/examples/} & four worked examples with their printed output\\
+\code{python/examples/} & ten worked examples (four SOD, six SMD) with their printed output\\
 \code{python/tests/} & 15 self-contained tests; generator of the MATLAB reference data\\
 \code{matlab/} & \code{sod\_*.m} functions in base MATLAB, no toolboxes\\
 \code{matlab/examples/}, \code{test\_sod.m} & the same examples; 32 checks against Python\\
@@ -505,6 +505,7 @@ For a sinusoidal shape $\mu=k^{2m}$, with $m$ the operator order; $k=\mu^{1/(2m)
 \item Both integrals run over the points where the derivative is valid. Snapshot order, spacing and rate are never used.
 \item Cutoffs: in the beam test with 0.5\% noise, Whittaker needed $k_c$ about 3--6 times and Savitzky--Golay about 8 times the largest wavenumber of interest. Scan $k_c$ with \code{smd\_kc\_scan} and keep a value where the wavenumbers do not move.
 \item Conditioning: the Whittaker system has condition number up to about $1+(2/(h k_c))^{2p}$; above $10^{12}$ a warning is issued.
+\item Implementation: $\symbf S_W$ is never formed. The thin SVD of the weighted field gives the data span, and the pencil is solved on it, so long records (many snapshots) cost $O(n_t n r)$.
 \end{itemize}
 \paragraph{What the tests establish.} SMD values depend only on the span of the snapshots, so shuffled or
 correlated snapshots give identical results. With the operator matched to the stiffness on a complete
@@ -514,6 +515,58 @@ counterparts of SOD's boundary terms. With physical weights a tapered pinned--pi
 frequencies to $1.3\times10^{-4}$ from five snapshots (\code{python/tests/test\_smd.py}, 32 checks;
 \code{matlab/test\_smd.m}, 43 checks including agreement with Python).
 
+\subsection{SMD examples}\label{sec:smd-examples}
+Examples 5--10 (\code{python/examples/ex05}--\code{ex10}, with MATLAB twins) store their printed output next to the scripts. Every number below is copied from those outputs.
+
+\paragraph{Example 5: snapshots without time.} A fixed rectangular membrane ($a=1$, $b=0.7$, $81\times57$ grid) carries a random combination of its first eight modes. SMD with the gradient returns the modes ($1-\mathrm{MAC}\le6.7\times10^{-8}$) and the wavenumbers to $4.0\times10^{-3}$ from 200 snapshots, from the same snapshots shuffled, and from only eight. The remaining error is the central-difference bias, the spatial twin of Example~2.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\linewidth]{figures/ex05_smd_membrane.pdf}
+  \caption{Example 5. Left: the eight SMD modes. Right: wavenumber error from 200 and from 8 snapshots, against the central-difference prediction.}
+  \label{fig:ex05}
+\end{figure}
+
+\paragraph{Example 6: physical weights.} A pinned--pinned beam with $EI=1$ and $\rho A=1+2x$. Its modes are mass-orthogonal, not $L^2$-orthogonal, so unit weights bias the shapes ($1-\mathrm{MAC}$ up to $0.15$). With \code{density} and \code{stiffness}, six snapshots give the modes to $1-\mathrm{MAC}\le2.1\times10^{-9}$ and the frequencies of a 100-term Galerkin model to $1.9\times10^{-4}$ on 401 points; the error falls as $h^2$.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\linewidth]{figures/ex06_smd_nonuniform_beam.pdf}
+  \caption{Example 6. Left: true modes (solid) and unit-weight SMD modes (dashed). Right: frequency error with physical weights against grid spacing.}
+  \label{fig:ex06}
+\end{figure}
+
+\paragraph{Example 7: noise and the cutoff.} A cantilever (three modes, 40 snapshots) with 0.1, 0.5 and 2\% white noise, ten realizations each. Plain finite differences give wavenumber errors of 3.8, 9.5 and 20 (medians). Whittaker smoothing brings them to $8\times10^{-4}$, $2.8\times10^{-3}$ and $8.1\times10^{-3}$ at its best cutoff, which falls from about $5\,k_{\max}$ to $3\,k_{\max}$ as noise grows; Savitzky--Golay is 2.4--4.3 times worse.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\linewidth]{figures/ex07_smd_noise.pdf}
+  \caption{Example 7. Median wavenumber error against the cutoff for Whittaker (left; dotted: plain finite differences) and Savitzky--Golay (right).}
+  \label{fig:ex07}
+\end{figure}
+
+\paragraph{Example 8: boundaries.} Exactness needs orthogonality over the measured domain. A centred field of view of $0.8L$ on a cantilever biases the wavenumbers by $-11.5$, $+1.8$ and $+11\%$. A circular hole of radius $0.14$ in a membrane biases the $(1,1)$ mode by $+11\%$. These are the spatial counterparts of SOD's window bias.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\linewidth]{figures/ex08_smd_boundaries.pdf}
+  \caption{Example 8. Left: cantilever, wavenumber bias against the measured fraction of the span. Right: membrane, bias against hole radius.}
+  \label{fig:ex08}
+\end{figure}
+
+\paragraph{Example 9: sub-Nyquist and random snapshots.} A simply supported beam ($\omega_j=(j\pi)^2$, highest mode at 56.5~Hz) decays freely for 10~s. SMD with physical weights gives all six frequencies to $1.85\times10^{-4}$ at every sampling rate from 400~Hz down to 2~Hz, and from 12 randomly timed snapshots. SOD with central differences fails once $\omega_6\Delta t$ is large (error $0.25$ at $f_s=3.5f_6$, near 1 below Nyquist). With exact velocities SOD often survives undersampling but fails erratically where aliased frequencies nearly coincide.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.75\linewidth]{figures/ex09_smd_subnyquist.pdf}
+  \caption{Example 9. Largest frequency error against the sampling rate for SMD and SOD.}
+  \label{fig:ex09}
+\end{figure}
+
+\paragraph{Example 10: a plate.} A simply supported plate ($a=1$, $b=0.6$, $D=\rho h=1$, $\nu=0.3$) has $\omega_{mn}=\pi^2[(m/a)^2+(n/b)^2]$. With physical weights the \code{plate} operator returns the first eight frequencies to within $0.21\%$; the Hessian and Laplacian operators agree with it to discretization error, because the Gaussian-curvature term vanishes on simply supported edges.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\linewidth]{figures/ex10_smd_plate.pdf}
+  \caption{Example 10. Left: the eight SMD modes. Right: frequency error for the three operators.}
+  \label{fig:ex10}
+\end{figure}
+
+\clearpage
 \section{Reference}\label{sec:reference}
 
 \subsection{Installation}

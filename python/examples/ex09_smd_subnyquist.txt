@@ -1,0 +1,18 @@
+fs =  400.00 Hz (fs/f6 =  7.074): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 9.17e-03   SOD (exact velocity) 9.28e-03
+fs =  280.97 Hz (fs/f6 =  4.969): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 9.15e-03   SOD (exact velocity) 9.30e-03
+fs =  197.36 Hz (fs/f6 =  3.490): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 2.52e-01   SOD (exact velocity) 9.31e-03
+fs =  138.63 Hz (fs/f6 =  2.451): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 4.72e-01   SOD (exact velocity) 9.39e-03
+fs =   97.38 Hz (fs/f6 =  1.722): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 6.39e-01   SOD (exact velocity) 9.17e-03
+fs =   68.40 Hz (fs/f6 =  1.210): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 7.50e-01   SOD (exact velocity) 8.91e-03
+fs =   48.04 Hz (fs/f6 =  0.850): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 8.25e-01   SOD (exact velocity) 1.95e-01
+fs =   33.75 Hz (fs/f6 =  0.597): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 8.60e-01   SOD (exact velocity) 9.26e-03
+fs =   23.71 Hz (fs/f6 =  0.419): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 9.06e-01   SOD (exact velocity) 1.76e-02
+fs =   16.65 Hz (fs/f6 =  0.294): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 9.56e-01   SOD (exact velocity) 2.66e-02
+fs =   11.70 Hz (fs/f6 =  0.207): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 9.56e-01   SOD (exact velocity) 1.67e-01
+fs =    8.22 Hz (fs/f6 =  0.145): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 9.64e-01   SOD (exact velocity) 5.85e-02
+fs =    5.77 Hz (fs/f6 =  0.102): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 9.74e-01   SOD (exact velocity) 5.68e-02
+fs =    4.05 Hz (fs/f6 =  0.072): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 9.86e-01   SOD (exact velocity) 1.95e-01
+fs =    2.85 Hz (fs/f6 =  0.050): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 9.87e-01   SOD (exact velocity) 9.17e-01
+fs =    2.00 Hz (fs/f6 =  0.035): max rel. frequency error  SMD 1.85e-04   SOD (central diff.) 9.91e-01   SOD (exact velocity) 4.74e-01
+SMD, 12 randomly timed snapshots, 20 draws: max error 1.85e-04, median 1.85e-04
+wrote figures/ex09_smd_subnyquist.pdf

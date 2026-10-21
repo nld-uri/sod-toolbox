@@ -100,8 +100,10 @@ planes = sod_pair_state(Rs.Q, dt, wmax, struct('Phi', Rs.Phi));
 - `docs/slides/SOD_toolbox_slides.pdf` and `SOD_toolbox.pptx`: NLD-branded slide deck with four animations.
 - `docs/animations/`: the animations (MP4) and their stills; `make_animations.py` rebuilds them and
   `report_numbers.py` prints every number the manual quotes for them.
-- `python/examples/`, `matlab/examples/`: four worked examples (an undamped chain, central-difference bias,
-  sensor noise and recognition, damping from a decay); each Python example stores its printed output.
+- `python/examples/`, `matlab/examples/`: ten worked examples. SOD: an undamped chain, central-difference bias,
+  sensor noise and recognition, damping from a decay. SMD: a membrane from unordered snapshots, a non-uniform beam
+  with physical weights, noise and the cutoff, boundaries and holes, sub-Nyquist snapshots against SOD, a plate.
+  Each Python example stores its printed output.
 
 ## Smooth mode decomposition (SMD)
 
@@ -161,7 +163,7 @@ with snapshots as bands, which equals SMD with a forward-difference gradient and
 ## Layout
 
     python/sodtoolbox/   core, recognize, damping, tracking, rom, residual, smd, systems, plotting
-    python/examples/     four worked examples
+    python/examples/     ten worked examples
     docs/                manual, slides, animations, web images
     python/tests/        self-contained tests and the MATLAB reference generator
     matlab/              sod_*.m, sod_smd*.m, test_sod.m, test_smd.m, sod_reference.mat, smd_reference.mat

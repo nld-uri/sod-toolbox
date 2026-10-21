@@ -1,0 +1,22 @@
+noise 0.1% (median of 10): plain fd 3.76e+00; Whittaker best 8.03e-04 at kc = 5.1 k_max; Savitzky-Golay best 3.49e-03 at kc = 11.6 k_max
+    kc/k_max =   1.2: Whittaker max |k/beta - 1| = 2.17e-01
+    kc/k_max =   2.2: Whittaker max |k/beta - 1| = 1.61e-02
+    kc/k_max =   4.1: Whittaker max |k/beta - 1| = 8.36e-04
+    kc/k_max =   7.7: Whittaker max |k/beta - 1| = 1.99e-03
+    kc/k_max =  14.3: Whittaker max |k/beta - 1| = 5.24e-03
+    kc/k_max =  26.5: Whittaker max |k/beta - 1| = 3.92e-02
+noise 0.5% (median of 10): plain fd 9.50e+00; Whittaker best 2.75e-03 at kc = 3.4 k_max; Savitzky-Golay best 6.97e-03 at kc = 11.6 k_max
+    kc/k_max =   1.2: Whittaker max |k/beta - 1| = 2.18e-01
+    kc/k_max =   2.2: Whittaker max |k/beta - 1| = 1.62e-02
+    kc/k_max =   4.1: Whittaker max |k/beta - 1| = 3.29e-03
+    kc/k_max =   7.7: Whittaker max |k/beta - 1| = 7.05e-03
+    kc/k_max =  14.3: Whittaker max |k/beta - 1| = 4.92e-02
+    kc/k_max =  26.5: Whittaker max |k/beta - 1| = 5.11e-01
+noise 2.0% (median of 10): plain fd 2.03e+01; Whittaker best 8.11e-03 at kc = 2.7 k_max; Savitzky-Golay best 1.91e-02 at kc = 5.1 k_max
+    kc/k_max =   1.2: Whittaker max |k/beta - 1| = 2.20e-01
+    kc/k_max =   2.2: Whittaker max |k/beta - 1| = 1.65e-02
+    kc/k_max =   4.1: Whittaker max |k/beta - 1| = 1.22e-02
+    kc/k_max =   7.7: Whittaker max |k/beta - 1| = 5.60e-02
+    kc/k_max =  14.3: Whittaker max |k/beta - 1| = 4.93e-01
+    kc/k_max =  26.5: Whittaker max |k/beta - 1| = 1.94e+00
+wrote figures/ex07_smd_noise.pdf

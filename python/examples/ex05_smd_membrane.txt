@@ -1,0 +1,8 @@
+200 snapshots  : max |k/k_exact - 1| = 4.00e-03, max (1 - MAC) = 6.7e-08
+200, shuffled  : max |k/k_exact - 1| = 4.00e-03, max (1 - MAC) = 6.7e-08
+8 snapshots    : max |k/k_exact - 1| = 4.00e-03, max (1 - MAC) = 6.7e-08
+modes (m, n): [(1, 1), (2, 1), (1, 2), (3, 1), (2, 2), (3, 2), (4, 1), (1, 3)]
+k exact     : [ 5.4783  7.7214  9.5099 10.4388 10.9566 13.0152 13.3438 13.8256]
+k SMD (200) : [ 5.4761  7.7153  9.4938 10.4197 10.9394 12.989  13.2981 13.7703]
+central-difference prediction k_fd/k - 1: -4.4e-04 -8.6e-04 -1.9e-03 -2.0e-03 -1.7e-03 -2.2e-03 -3.7e-03 -4.5e-03
+wrote figures/ex05_smd_membrane.pdf

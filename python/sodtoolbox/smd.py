@@ -423,15 +423,22 @@ def smd(W, grid=None, operator='grad', method='fd', center=True, rank=None, rtol
     fm, gv = g.mask.ravel(), d.valid
     wq = g.w.ravel()[gv]
     rho, kap = _field(density, g, 'density')[gv], _field(stiffness, g, 'stiffness')[gv]
-    Wf = d.F[:, gv]
-    SW = (Wf * (wq * rho)) @ Wf.T
-    SG = sum(c * (Gk[:, gv] * (wq * kap)) @ Gk[:, gv].T for c, Gk in zip(d.cw, d.G))
-    mu, P, s = smd_pencil(SW, SG, rank, rtol)
+    Wq = d.F[:, gv] * np.sqrt(wq * rho)               # S_W = Wq Wq^T, never formed (n_t may be large)
+    # Truncated SMD through the thin SVD of Wq: the leading left singular vectors span the data, then the small
+    # r x r symmetric eigenproblem of S_G on that span. Same result as smd_pencil(S_W, S_G), O(n_t n r) work.
+    U, sv, _ = np.linalg.svd(Wq, full_matrices=False)
+    s = sv ** 2
+    r = int(np.sum(s > rtol * s[0])) if rank is None else int(rank)
+    T = U[:, :r] / sv[:r]
+    Hm = sum(c * ((T.T @ Gk[:, gv]) * (wq * kap)) @ (Gk[:, gv].T @ T) for c, Gk in zip(d.cw, d.G))
+    mu, A = eigh((Hm + Hm.T) / 2)
+    P = T @ A
     Phi = np.full((g.npts, P.shape[1]), np.nan)
     Phi[fm] = d.F[:, fm].T @ P                      # modes on every measured point, normalized on the valid domain
     with np.errstate(invalid='ignore'):
         k = np.where(mu > 0, mu, np.nan) ** (1.0 / (2 * d.order))
-    return SMDResult(mu, k, Phi, SW @ P, P, s, P.shape[1], d.order, g, d.operator, d.method,
+    C = Wq @ (Wq.T @ P)                             # = S_W P
+    return SMDResult(mu, k, Phi, C, P, s, P.shape[1], d.order, g, d.operator, d.method,
                      density is not None and stiffness is not None)
 
 
