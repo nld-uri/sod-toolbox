@@ -62,7 +62,8 @@ with the values $\mu_i$ in ascending order. The covectors $\psib_i$ define the
 smooth coordinates $\q=\X\Ps$; the smooth modes are $\Ph=\Sg_x\Ps$. SOD here is the temporal form: it smooths the coordinates in time. Its spatial dual, smooth mode decomposition (SMD)~\cite{Li2023}, smooths the mode shapes in space and suits full-field data that are richer in space than in time; Section~\ref{sec:smd} describes its implementation here. A smooth mode of SOD is the shape paired with a temporally smooth coordinate, not a spatially smoothed shape. The method
 was introduced for vibration mode identification by Chelidze and
 Zhou~\cite{Chelidze2006} and for randomly excited systems by Farooq and
-Feeny~\cite{Farooq2008}.
+Feeny~\cite{Farooq2008}. The pencil itself, with first differences, appeared earlier in statistics as
+maximum autocorrelation factors, for spatial imagery~\cite{Green1988} and for trends in parallel time series~\cite{Shapiro1989}.
 
 For an undamped linear structure whose modal coordinates are uncorrelated over
 the record, $\mu_i=\omega_i^2$ and the smooth modes are the linear normal modes
@@ -632,6 +633,8 @@ $\Sg_x\Ps$), \code{Q} (coordinates for the samples used). Python also offers
   experimental data, \emph{Journal of Fluid Mechanics} 656 (2010) 5--28,
   doi:10.1017/S0022112010001217.
 \bibitem{Li2023} H.-W.-X.~Li, P.~Wanchoo, A.~Shukla, D.~Chelidze, Smooth mode decomposition: Theory and its applications in full-field output-only modal analysis, \emph{Mechanical Systems and Signal Processing} 200 (2023) 110541, doi:10.1016/j.ymssp.2023.110541.
+\bibitem{Green1988} A.~A.~Green, M.~Berman, P.~Switzer, M.~D.~Craig, A transformation for ordering multispectral data in terms of image quality with implications for noise removal, \emph{IEEE Transactions on Geoscience and Remote Sensing} 26 (1988) 65--74, doi:10.1109/36.3001.
+\bibitem{Shapiro1989} D.~E.~Shapiro, P.~Switzer, Extracting time trends from multiple monitoring sites, SIMS Technical Report 132, Department of Statistics, Stanford University, 1989.
 \end{thebibliography}
 
 \end{document}
