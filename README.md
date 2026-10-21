@@ -25,7 +25,7 @@ below is this pencil. The options change only how the covariances are formed.
 SOD here is the temporal form: it smooths the coordinates in time. Its spatial dual,
 smooth mode decomposition (SMD; Li, Wanchoo, Shukla & Chelidze, MSSP 200 (2023) 110541),
 smooths the mode shapes in space and suits full-field data that are richer in space than
-in time; it is not part of this toolbox. A smooth mode of SOD is the shape paired with a
+in time; the `smd` module implements it (section below). A smooth mode of SOD is the shape paired with a
 temporally smooth coordinate, not a spatially smoothed shape.
 
 ## Rules the toolbox enforces
@@ -57,6 +57,9 @@ temporally smooth coordinate, not a spatially smoothed shape.
 | Galerkin, energy-Galerkin ROMs, exact ZOH simulation | `galerkin`, `rom_config`, `rom_state`, `simulate_state` | `sod_galerkin` |
 | linear core plus residual basis | `residual_basis`, `residual_diagnostics` | `sod_residual_basis` (kinds a, k, x) |
 | metrics | `merr`, `mac`, `principal_angles`, `mortho` | `sod_merr`, `sod_mac`, `sod_mortho` |
+| SMD grid (line or grid, mask, quadrature weights) | `make_grid` | `sod_smd_grid` |
+| spatial derivative fields (fd, Savitzky-Golay, Whittaker) | `smd_derivatives` | `sod_smd_derivs` |
+| smooth mode decomposition, cutoff scan | `smd`, `smd_kc_scan` | `sod_smd`, `sod_smd_kc_scan`, `sod_smd_mode` |
 
 ## Quick start
 
@@ -99,19 +102,59 @@ planes = sod_pair_state(Rs.Q, dt, wmax, struct('Phi', Rs.Phi));
 - `python/examples/`, `matlab/examples/`: four worked examples (an undamped chain, central-difference bias,
   sensor noise and recognition, damping from a decay); each Python example stores its printed output.
 
+## Smooth mode decomposition (SMD)
+
+SMD is the spatial dual of SOD for full-field data (Li, Wanchoo, Shukla & Chelidze, MSSP 200 (2023)
+110541). It smooths mode shapes in space instead of coordinates in time, with spatial derivatives of the
+measured field in place of velocities. Snapshots need no time order, spacing or Nyquist rate.
+
+    S_G p = mu S_W p,  S_W = W diag(w) W',  S_G = sum_k G_k diag(w) G_k'   (snapshots x snapshots)
+    phi = W' p,  mu = ||D phi||^2 / ||phi||^2,  k = mu^(1/(2m))  (SMD wavenumber)
+
+Pick the operator from the physics: `'grad'` (m = 1) for strings, membranes and flows; `'second'` (m = 2)
+for beams (on a grid: the Hessian, plate bending); `'laplacian'` (m = 2). Pick the derivative estimator
+from the data: `'fd'` (finite differences; noise-free or coarse data), `'whittaker'` (penalized smoothing;
+fills masked points), `'savgol'` (local polynomials; complete uniform grids). For noisy data scan the
+cutoff `kc` with `smd_kc_scan` and keep a value where the wavenumbers do not move: Whittaker about 3-6
+times, Savitzky-Golay about 8 times the largest wavenumber of interest (beam test, 0.5% noise).
+
+```python
+g = st.make_grid(x=xs, y=ys, mask=measured)          # line: make_grid(x=xs)
+D = st.smd_derivatives(W, g, 'grad', 'whittaker', kc=60.0)   # derivative fields of every snapshot
+R = st.smd(W, g, 'grad', 'whittaker', kc=60.0)       # W: snapshots x ny x nx (NaN = missing)
+R.k, R.mode(0), R.C                                  # wavenumbers, first mode on the grid, coordinates
+K = st.smd_kc_scan(W, g, 'grad', 'whittaker', [30, 60, 120])
+```
+
+```matlab
+G = sod_smd_grid(xs, ys, measured);
+D = sod_smd_derivs(W, G, 'grad', 'whittaker', struct('kc', 60));
+R = sod_smd(W, G, 'grad', 'whittaker', struct('kc', 60));
+M1 = sod_smd_mode(R, 1);
+```
+
+What the tests show (`python/tests/test_smd.py`): SMD values depend only on the span of the snapshots,
+so shuffled or correlated snapshots give the same result. On a complete domain with the operator matched
+to the stiffness, the modes and wavenumbers of strings, cantilever beams and membranes are recovered to
+discretization error. A hole in the field, a partial field of view, or a mismatched operator biases them;
+these are the spatial counterparts of SOD's boundary terms.
+
 ## Tests
 
 - `python/tests/test_sod.py`: 15 self-contained checks of known properties.
+- `python/tests/test_smd.py`: 22 checks of SMD, five of them failure controls that must fail.
+- `python/tests/make_smd_reference.py` writes `matlab/smd_reference.mat`; `matlab/test_smd.m`
+  checks the MATLAB port against it (31 checks; MATLAB R2026b, Python 3.11).
 - `python/tests/make_reference.py` writes `matlab/sod_reference.mat`;
   `matlab/test_sod.m` checks the MATLAB port against it (32 checks).
 
 ## Layout
 
-    python/sodtoolbox/   core, recognize, damping, tracking, rom, residual, systems, plotting
+    python/sodtoolbox/   core, recognize, damping, tracking, rom, residual, smd, systems, plotting
     python/examples/     four worked examples
     docs/                manual, slides, animations, web images
     python/tests/        self-contained tests and the MATLAB reference generator
-    matlab/              sod_*.m, test_sod.m, sod_reference.mat
+    matlab/              sod_*.m, sod_smd*.m, test_sod.m, test_smd.m, sod_reference.mat, smd_reference.mat
 
 ## License
 
