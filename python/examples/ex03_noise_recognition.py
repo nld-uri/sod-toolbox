@@ -47,7 +47,7 @@ for i in range(n):
     ax[1].semilogy(om, s, color=pl.color(i) if i in idx else pl.ref(), lw=0.9 if i in idx else 0.6)
 for x in w:
     ax[1].axvline(x, color=pl.ref(), lw=0.5, ls=':')
-ax[1].set_xlim(0, 3.2); ax[1].set_ylim(1e-5, 2); ax[1].set_xlabel(r'$\omega$ (rad/s)'); ax[1].set_ylabel('DCT power (normalised)')
-ax[1].set_title('lagged SOD coordinates; grey: rejected', fontsize=8.5)
+ax[1].set_xlim(0, 3.2); ax[1].set_ylim(1e-5, 2); ax[1].set_xlabel(r'$\omega$ (rad/s)'); ax[1].set_ylabel('DCT power (normalized)')
+ax[1].set_title('lagged SOD coordinates; gray: rejected', fontsize=8.5)
 fig.tight_layout()
 fin(fig, a.out, 'ex03_noise_recognition.pdf')

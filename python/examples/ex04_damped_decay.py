@@ -1,4 +1,4 @@
-"""Example 4. Damped free decay: state SOD planes, recognised by circularity, and damping from each plane.
+"""Example 4. Damped free decay: state SOD planes, recognized by circularity, and damping from each plane.
 
 4-DOF chain with Rayleigh damping (2 % at modes 1 and 4), free decay from equal modal energies, exact kinematics.
 Configuration SOD of a damped decay no longer returns 1/omega^2 exactly. State SOD on y = (x, xdot) returns pairs

@@ -2,7 +2,7 @@ function [nu, F, P] = sod_smd_maf(W, G, opts)
 %SOD_SMD_MAF  Maximum autocorrelation factors (Switzer and Green 1984), snapshots as bands, grid points as pixels.
 %   [nu, F, P] = SOD_SMD_MAF(W, G, opts)
 %   Pencil Sigma_D p = nu Sigma p: Sigma = W W' over the measured points; Sigma_D = sum over grid axes of the
-%   covariance of unit-lag differences between measured neighbours. Factors F = W' P (npts x r), nu ascending.
+%   covariance of unit-lag differences between measured neighbors. Factors F = W' P (npts x r), nu ascending.
 %   It is SMD with a forward-difference gradient, unit spacing and unit weights (see SOD_SMD).
 %   opts: center (true), rank ([]), rtol (1e-10), axes ('xy' sums both unit lags; 'x' or 'y' is the single lag
 %         of Green et al. 1988; on a line only 'x').

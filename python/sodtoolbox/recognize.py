@@ -1,4 +1,4 @@
-"""Recognising modes and modal planes among SOD coordinates, never by smoothness.
+"""Recognizing modes and modal planes among SOD coordinates, never by smoothness.
 
 Rules: modes are identified, paired and ordered by their frequency or by the circularity of a pair,
 not by the SOD value. Frequencies are read from the DCT-II periodogram (no wrap-around for non-periodic records),
@@ -7,7 +7,7 @@ coordinate's relative half-power width, capped at 15%.
 
 select_config : configuration SOD, spectral consistency of each coordinate with its SOD frequency
 pair_state    : state SOD, pairs of coordinates forming one modal plane (one-sidedness of q_a + i q_b),
-                with the energy-gated banded rescue for planes contaminated by a bend or a neighbour
+                with the energy-gated banded rescue for planes contaminated by a bend or a neighbor
 """
 import numpy as np
 from scipy.fft import dct

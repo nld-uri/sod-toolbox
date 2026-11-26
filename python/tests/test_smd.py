@@ -111,7 +111,7 @@ jj = np.arange(1, 81) * np.pi; Sq = np.sin(np.outer(xq, jj))
 Mg = (Sq * (wq * rhof(xq))[:, None]).T @ Sq; Kg = (Sq * jj ** 2 * (wq * EIf(xq))[:, None]).T @ (Sq * jj ** 2)
 w2, Cg = _eigh(Kg, Mg)                                           # Galerkin reference (independent of the fd operator)
 xn = np.linspace(0, 1, 401); gn = st.make_grid(x=xn); Pn = np.sin(np.outer(xn, jj)) @ Cg[:, :5]
-Wn5 = rng.standard_normal((5, 5)) @ Pn.T                          # as many snapshots as modes (no centring)
+Wn5 = rng.standard_normal((5, 5)) @ Pn.T                          # as many snapshots as modes (no centering)
 Rph = st.smd(Wn5, gn, 'second', 'fd', center=False, density=rhof(xn), stiffness=EIf(xn))
 check('non-uniform beam, physical weights: omega_SMD = omega (5 snapshots)', np.max(np.abs(Rph.omega / np.sqrt(w2[:5]) - 1)), 1e-3)
 check('non-uniform beam, physical weights: modes (1 - MAC)', max(1 - mac(Rph.Phi[:, i], Pn[:, i]) for i in range(5)), 1e-6)

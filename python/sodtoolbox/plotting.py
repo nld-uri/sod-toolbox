@@ -2,7 +2,7 @@
 
 palette='matlab' uses MATLAB's default ColorOrder (dark green #055432 replaces green next to orange or yellow,
 plum #67355C replaces purple next to blue); palette='nld' uses the Nonlinear Dynamics Laboratory figure series.
-Reference curves are dashed grey. Save as vector PDF.
+Reference curves are dashed gray. Save as vector PDF.
 """
 import os, shutil
 

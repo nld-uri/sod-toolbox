@@ -1,4 +1,4 @@
-%EX04_DAMPED_DECAY  State SOD planes of a damped decay, recognised by circularity, and damping per plane.
+%EX04_DAMPED_DECAY  State SOD planes of a damped decay, recognized by circularity, and damping per plane.
 addpath(fullfile(fileparts(mfilename('fullpath')), '..'));
 C0 = sod_set_style("matlab");
 [M, K, C] = sod_chain(4, 0.02);

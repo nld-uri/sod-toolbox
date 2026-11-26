@@ -49,7 +49,7 @@ def save(fig, anim, name, nframes, still_frame, still_only):
 
 # ------------------------------------------------------------------ 1 geometry: the Rayleigh quotient
 def rayleigh(nf, still_only):
-    """SOD minimises the roughness of q = x psi over covectors psi; the extremes are the LNM frequencies."""
+    """SOD minimizes the roughness of q = x psi over covectors psi; the extremes are the LNM frequencies."""
     M, K, Cd = sy.chain(2, m=[1, 3], k=[1, 2])
     w, P = sy.lnm_modes(M, K)
     y0 = sy.equal_energy(M, K, rng=np.random.default_rng(4))

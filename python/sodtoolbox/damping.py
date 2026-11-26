@@ -3,7 +3,7 @@
 The symmetric SOD pencil discards the symmetric part of <ydot y^T>, which on a free decay is the boundary term
 (y_T y_T^T - y_0 y_0^T)/2T: the energy lost over the record. The least-squares fit
     L = <qdot q^T> <q q^T>^{-1}
-on the coordinates q of one recognised plane recovers its dynamics, with zeta = -tr(L)/2 / sqrt(det L).
+on the coordinates q of one recognized plane recovers its dynamics, with zeta = -tr(L)/2 / sqrt(det L).
 Its trace follows from the end states alone (plane_identity), so a record that has decayed is needed.
 fit_L on the k smoothest state-SOD coordinates at once is a continuous-time least-squares relative of DMD restricted
 to the SOD subspace; it needs no plane recognition.

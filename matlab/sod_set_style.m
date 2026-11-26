@@ -1,6 +1,6 @@
 function C = sod_set_style(palette)
 %SOD_SET_STYLE  LaTeX interpreters and a categorical palette ('matlab' default ColorOrder or 'nld').
-%   MATLAB palette: dark green #055432 and plum #67355C replace green and purple (colour-vision safety).
+%   MATLAB palette: dark green #055432 and plum #67355C replace green and purple (color-vision safety).
 if nargin < 1, palette = "matlab"; end
 if palette == "nld"
     C = hex2rgb(["#1F5A85" "#B4622A" "#588A75" "#CA863E" "#774860"]);

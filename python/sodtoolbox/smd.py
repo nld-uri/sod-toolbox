@@ -40,7 +40,7 @@ Derivative estimators (all linear in the data, so the pencil is exactly the oper
                  from a cutoff wavenumber kc, using the MEASURED gain of the smoothing filter (gain 1/2 at kc).
     'whittaker'  penalized least-squares smoothing of each snapshot, (Wm + lam D_p^T D_p) u = Wm y with
                  lam = kc^(-2p) (gain 1/(1 + (k/kc)^(2p)), 1/2 at kc), then finite differences. Fills masked
-                 points from their neighbours; derivatives are reported only on measured points.
+                 points from their neighbors; derivatives are reported only on measured points.
 Conditioning: the Whittaker system has condition number up to about 1 + (2/(h kc))^(2p) (h the smallest spacing,
 Gershgorin bound computed and warned above 1e12). Roundoff then reaches the results: Python (splu) and MATLAB
 (backslash) agreed to 2e-5 in the SMD wavenumbers at bounds 1.8e12 and 4.8e14 (tests/make_smd_reference.py).
@@ -348,7 +348,7 @@ class SMDResult:
     mu    : SMD values, ascending: ||D phi||^2 / ||phi||^2 (smoothest first)
     k     : SMD wavenumbers mu^(1/(2m)) (rad per length unit)
     Phi   : modes, (n_points, r) on the full flattened grid, NaN outside the mask; unit weighted L2 norm
-    C     : coordinates (n_t, r), W = C Phi^T on the data subspace (mean-removed if centred)
+    C     : coordinates (n_t, r), W = C Phi^T on the data subspace (mean-removed if centered)
     P     : covectors (n_t, r), P^T S_W P = I
     sw    : eigenvalues of S_W, descending (the field's weighted energy spectrum)
     rank  : number of directions kept
@@ -456,7 +456,7 @@ def maf(W, grid=None, center=True, rank=None, rtol=1e-10, axes=None):
     """Maximum autocorrelation factors (Switzer and Green 1984) of full-field snapshots, snapshots as bands.
 
     Pencil: Sigma_D p = nu Sigma p, with Sigma = W W^T over the measured points and Sigma_D the sum over grid axes of
-    the covariance of unit-lag differences W(x + e) - W(x), over pairs of measured neighbours. Factors f = W^T p,
+    the covariance of unit-lag differences W(x + e) - W(x), over pairs of measured neighbors. Factors f = W^T p,
     nu ascending (most autocorrelated first; autocorrelation 1 - nu/2 per axis for a stationary field).
     axes: lags summed, 'xy' (default; SMD with a forward-difference gradient, h = 1, unit weights), 'x' or 'y'
     (a single lag, as in Green et al. 1988), or a tuple of array axes of the grid shape (ny, nx).

@@ -2,7 +2,7 @@
 
 Exactness needs the true shapes to be orthogonal in both the L2 and the energy products over the measured domain.
 On the whole structure the boundary conditions remove the integration-by-parts terms; on a sub-domain they do not.
-Left: cantilever (first three modes), measured only on a centred window covering a fraction of the span. The
+Left: cantilever (first three modes), measured only on a centered window covering a fraction of the span. The
 wavenumber bias is near zero on the full span and reaches about 10 percent once a fifth of the span is missing.
 Right: rectangular membrane (first four modes) with a circular hole of growing radius at (0.6, 0.35); masked points
 are filled by Whittaker smoothing for the derivatives and excluded from both integrals. The (1,1) mode, whose
@@ -55,7 +55,7 @@ fig, ax = plt.subplots(1, 2, figsize=(6.6, 2.6))
 for i in range(3):
     ax[0].semilogy(fr, np.abs(kb[:, i]), 'o-', ms=3.5, mfc='none', color=pl.color(i), label=f'mode {i + 1}')
 ax[0].set_xlabel('measured fraction of the span'); ax[0].set_ylabel(r'$|\hat k_i/\beta_i-1|$')
-ax[0].legend(fontsize=7); ax[0].set_title('cantilever, centred field of view', fontsize=8)
+ax[0].legend(fontsize=7); ax[0].set_title('cantilever, centered field of view', fontsize=8)
 for i in range(4):
     ax[1].plot(rad, 100 * kh[:, i], 's-', ms=3.5, mfc='none', color=pl.color(i), label=rf'$({mn[i][0]},{mn[i][1]})$')
 ax[1].set_xlabel(r'hole radius $r/a$'); ax[1].set_ylabel(r'$\hat k/k_{mn}-1$ (\%)')

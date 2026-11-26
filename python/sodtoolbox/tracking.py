@@ -22,7 +22,7 @@ def sod_window(Xw, dt, boundary=False):
 
 
 def sod_track(X, dt, nwin, step=None, boundary=False):
-    """Slide a window of nwin samples by step (default nwin // 2). Returns window centre times (from t = 0),
+    """Slide a window of nwin samples by step (default nwin // 2). Returns window center times (from t = 0),
     frequencies of the smoothest coordinate, and its smooth modes (one row per window)."""
     step = step or max(1, nwin // 2)
     tc, om, modes = [], [], []

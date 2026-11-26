@@ -51,10 +51,10 @@ y0 = np.r_[P @ np.ones(4), np.zeros(4)]; dt = 0.005; N = 120000
 Y = st.simulate_state(A, Bs, np.zeros((N, 1)), dt, y0); Yd = Y @ A.T
 s_true = np.linalg.eigvals(A); s_true = np.sort_complex(s_true[s_true.imag > 0])
 Rs = st.state_sod(Y, Yd); D = st.decay_damping(Rs, Yd, dt, 10.0)
-check('decay: four planes recognised by circularity', abs(len(D['plane']) - 4), 0)
+check('decay: four planes recognized by circularity', abs(len(D['plane']) - 4), 0)
 zt = -s_true.real / abs(s_true)
 ze = np.array(sorted([(abs(p[0]), p[1]) for p in D['plane']]))[:, 1]
-# per-plane fits are approximate: a tilted plane leaks its neighbour's dynamics (errors up to 0.17 were seen on cantilever decays)
+# per-plane fits are approximate: a tilted plane leaks its neighbor's dynamics (errors up to 0.17 were seen on cantilever decays)
 check('decay: plane-wise zeta vs exact (approximate, relative)', np.max(np.abs(ze / zt - 1)), 0.1)
 se = np.sort_complex(np.array(D['sub12']))
 check('decay: subspace fit eigenvalues vs exact (relative)', np.max(np.abs(se - s_true) / abs(s_true)), 1e-6)

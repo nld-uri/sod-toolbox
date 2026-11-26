@@ -78,7 +78,7 @@ either this pencil formed in a different way, or a rule for reading its output.
 \paragraph{What the toolbox provides.}
 \begin{itemize}
   \item \textbf{One canonical pencil} with the options that the SOD papers use:
-    derivative estimate, step size, lagged covariances, centring, channel scaling
+    derivative estimate, step size, lagged covariances, centering, channel scaling
     and data-rank restriction (Section~\ref{sec:decomposition}).
   \item \textbf{State SOD} on $\y=(\x,\dot\x)$, which returns each damped mode as a
     pair of coordinates spanning its modal plane (Section~\ref{sec:damping}).
@@ -146,7 +146,7 @@ Your data & Use\\
 \midrule
 Displacement and velocity, exact or estimated & \code{sod(X, V)}\\
 Displacement only, clean & \code{sod(X, dt=dt)}, then \code{cd\_correct} (Sec.~\ref{sec:fd})\\
-Displacement with white sensor noise & \code{sod(X, dt=dt, h=2, lag=5)} or a regularised velocity (Sec.~\ref{sec:noise})\\
+Displacement with white sensor noise & \code{sod(X, dt=dt, h=2, lag=5)} or a regularized velocity (Sec.~\ref{sec:noise})\\
 Channels in different units & \code{scale=True} (rank test only; Sec.~\ref{sec:rank})\\
 Damped free decay; damping wanted & \code{state\_sod}, \code{pair\_state}, \code{decay\_damping} (Sec.~\ref{sec:damping})\\
 Smooth trend under fast content & \code{sod(X, dt=dt, h=15, lag=31, center=True)} (Sec.~\ref{sec:trend})\\
@@ -162,7 +162,7 @@ Reduced-order model & \code{sod\_modes}, then \code{rom\_config} or \code{rom\_s
 \subsection{Data and conventions}
 
 Rows of $\X$ and $\V$ are time samples, columns are channels. Averages
-$\avg{\cdot}$ are sample means. The toolbox normalises the covectors so that
+$\avg{\cdot}$ are sample means. The toolbox normalizes the covectors so that
 $\Ps^{\mathsf T}\Sg_x\Ps={\symbfit{I}}$, the identity. Then:
 \begin{center}\small
 \begin{tabular}{@{}ll@{}}
@@ -193,8 +193,8 @@ Each covector $\psib$ defines a scalar coordinate $q=\x^{\mathsf T}\psib$. The r
 \begin{equation}
   \rho(\psib)=\frac{\psib^{\mathsf T}\Sg_v\psib}{\psib^{\mathsf T}\Sg_x\psib}=\frac{\avg{\dot q^2}}{\avg{q^2}}
 \end{equation}
-measures how rough $q$ is. SOD minimises $\rho$; the stationary values of $\rho$
-are the $\mu_i$. POD, in contrast, maximises $\avg{q^2}$ alone and returns
+measures how rough $q$ is. SOD minimizes $\rho$; the stationary values of $\rho$
+are the $\mu_i$. POD, in contrast, maximizes $\avg{q^2}$ alone and returns
 orthogonal axes. The smooth modes are orthogonal only in the $\Sg_x^{-1}$ metric.
 
 Figure~\ref{fig:geom} shows a two-mass chain with masses $(1,3)$ and springs
@@ -216,7 +216,7 @@ are $0.4381$ and $1.8643$, against $\omega=0.4380,\ 1.8641$
 
 \subsection{When is SOD exact?}\label{sec:exact}
 
-Let $\Ph_0$ be the mass-normalised LNMs and $\etab=\Ph_0^{-1}\x$ the modal
+Let $\Ph_0$ be the mass-normalized LNMs and $\etab=\Ph_0^{-1}\x$ the modal
 coordinates, with modal covariances $\G_x=\avg{\etab\etab^{\mathsf T}}$ and
 $\G_v=\avg{\dot{\etab}\dot{\etab}^{\mathsf T}}$.
 
@@ -326,10 +326,10 @@ rises, and fast noise directions can take the place of weak modes. Two remedies 
 built in.
 \begin{itemize}
   \item \textbf{Lagged covariances.} \code{lag=$\ell$} replaces both covariances by the
-    symmetrised lag-$\ell$ covariances. With $\ell\ge2h+1$ white noise drops out of
+    symmetrized lag-$\ell$ covariances. With $\ell\ge2h+1$ white noise drops out of
     both. The pencil stays real and symmetric but may become indefinite in fast
     directions; those values sort last.
-  \item \textbf{Regularised velocities.} Estimate $\V$ with a smoother (for example the
+  \item \textbf{Regularized velocities.} Estimate $\V$ with a smoother (for example the
     lab's kinematics toolbox) and call \code{sod(X, V)}.
 \end{itemize}
 
@@ -347,7 +347,7 @@ near the cutoff, mixed with noise and was rejected.
   \includegraphics[width=\linewidth]{figures/ex03_noise_recognition.pdf}
   \caption{Example 3. Left: SOD frequencies with central differences and with lagged
   covariances; filled markers were kept by \code{select\_config}. Right: discrete cosine transform (DCT) spectra
-  of the lagged-SOD coordinates; grey: rejected.}
+  of the lagged-SOD coordinates; gray: rejected.}
   \label{fig:ex03}
 \end{figure}
 
@@ -360,7 +360,7 @@ of 60, scaled and unscaled SOD kept different weak directions and agreed only on
 two smoothest values. Use \code{scale=True} when channels carry different units,
 as in state SOD.
 
-\subsection{Recognising modes}\label{sec:recog}
+\subsection{Recognizing modes}\label{sec:recog}
 
 The smoothness order is not the mode order. A noise direction, a drift or a mixed
 coordinate can be smoother than a weakly excited mode. The toolbox therefore never
@@ -423,7 +423,7 @@ decayed from equal modal energies. Configuration SOD erred in frequency by
 $+0.21$, $-0.82$, $+1.5$ and $-1.3\,\%$. State SOD gave four planes with circularity
 $0.992$--$0.995$. The per-plane damping erred by $3.6\times10^{-4}$, $-2.7\times10^{-4}$,
 $-5.2\times10^{-3}$ and $8.6\times10^{-3}$ (relative); a tilted plane leaks the dynamics
-of its neighbour. The subspace fit returned every $\zeta$ to $2.4\times10^{-14}$ or better.
+of its neighbor. The subspace fit returned every $\zeta$ to $2.4\times10^{-14}$ or better.
 
 \begin{figure}[h]
   \centering
@@ -546,7 +546,7 @@ Examples 5--10 (\code{python/examples/ex05}--\code{ex10}, with MATLAB twins) sto
   \label{fig:ex07}
 \end{figure}
 
-\paragraph{Example 8: boundaries.} Exactness needs orthogonality over the measured domain. A centred field of view of $0.8L$ on a cantilever of length $L$ biases the wavenumbers by $-11.5$, $+1.8$ and $+11\,\%$. A circular hole of radius $0.14$ in a membrane biases the $(1,1)$ mode by $+11\,\%$. These are the spatial counterparts of SOD's window bias.
+\paragraph{Example 8: boundaries.} Exactness needs orthogonality over the measured domain. A centered field of view of $0.8L$ on a cantilever of length $L$ biases the wavenumbers by $-11.5$, $+1.8$ and $+11\,\%$. A circular hole of radius $0.14$ in a membrane biases the $(1,1)$ mode by $+11\,\%$. These are the spatial counterparts of SOD's window bias.
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\linewidth]{figures/ex08_smd_boundaries.pdf}
@@ -668,7 +668,7 @@ $\Sg_x\Ps$), \code{Q} (coordinates for the samples used). Python also offers
   \item Per-plane damping is approximate when planes are correlated, as in a single
     decay; the subspace fit is not.
   \item Central differences dominate the error under sensor noise; use lagged covariances
-    or regularised velocities.
+    or regularized velocities.
   \item The rank cut depends on channel scaling (Section~\ref{sec:rank}).
   \item Windowed values of nonlinear systems are equivalent-linear values of the window,
     raised by the orbit's harmonics.

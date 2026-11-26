@@ -1,4 +1,4 @@
-"""SOD Toolbox: smooth orthogonal decomposition for modal identification and reduced-order modelling.
+"""SOD Toolbox: smooth orthogonal decomposition for modal identification and reduced-order modeling.
 
 Modules
     core       configuration SOD, state SOD, lagged and scaled variants, boundary-corrected fit (csod)

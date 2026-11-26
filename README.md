@@ -1,7 +1,7 @@
 # SOD Toolbox
 
 Smooth orthogonal decomposition (SOD) for modal identification and reduced-order
-modelling, in Python and base MATLAB. Nonlinear Dynamics Laboratory, University of
+modeling, in Python and base MATLAB. Nonlinear Dynamics Laboratory, University of
 Rhode Island. It is the common code base of a series of SOD papers in preparation.
 
 SOD solves one real symmetric generalized eigenproblem,
@@ -30,7 +30,7 @@ temporally smooth coordinate, not a spatially smoothed shape.
 
 ## Rules the toolbox enforces
 
-- Modes and modal planes are recognised, paired and ordered by frequency or by
+- Modes and modal planes are recognized, paired and ordered by frequency or by
   circularity. The SOD value (smoothness) is never used for this.
 - Model reduction uses model kinematics. Identification uses estimated kinematics
   (for example from the kinematics toolbox). The two selections are reported apart.
@@ -39,7 +39,7 @@ temporally smooth coordinate, not a spatially smoothed shape.
 
 | task | Python (`sodtoolbox`) | MATLAB |
 |---|---|---|
-| configuration SOD (lag, centring, scaling, rank restriction) | `sod` | `sod_decomp` |
+| configuration SOD (lag, centering, scaling, rank restriction) | `sod` | `sod_decomp` |
 | derivative of a record (central step h, gradient) | `derivative` | `sod_deriv` |
 | data-subspace basis | `data_rank_basis` | `sod_rank_basis` |
 | covariances (plain, symmetric lagged) | `covariances` | `sod_cov` |

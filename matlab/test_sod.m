@@ -12,9 +12,9 @@ res = add(res, 'sod_decomp Psi', cs(R.Psi, R0.sod_Psi), 1e-7); res = add(res, 's
 R = sod_decomp(X, V, struct('scale', true));           res = add(res, 'scaled mu', rd(R.mu, R0.sods_mu), 1e-9);
 res = add(res, 'scaled Psi', cs(R.Psi, R0.sods_Psi), 1e-7);
 R = sod_decomp(X, [], struct('dt', dt, 'h', 2, 'lag', 5, 'center', true, 'tol', []));
-res = add(res, 'lagged, h = 2, centred: mu', rd(R.mu, R0.sodl_mu), 1e-8); res = add(res, 'lagged Psi', cs(R.Psi, R0.sodl_Psi), 1e-6);
+res = add(res, 'lagged, h = 2, centered: mu', rd(R.mu, R0.sodl_mu), 1e-8); res = add(res, 'lagged Psi', cs(R.Psi, R0.sodl_Psi), 1e-6);
 R = sod_decomp(X, [], struct('dt', dt, 'deriv', 'gradient', 'center', true, 'tol', []));
-res = add(res, 'gradient, centred: mu', rd(R.mu, R0.sodg_mu), 1e-9); res = add(res, 'gradient Psi', cs(R.Psi, R0.sodg_Psi), 1e-7);
+res = add(res, 'gradient, centered: mu', rd(R.mu, R0.sodg_mu), 1e-9); res = add(res, 'gradient Psi', cs(R.Psi, R0.sodg_Psi), 1e-7);
 Rs = sod_state(R0.Y, R0.Yd);                           res = add(res, 'sod_state mu', rd(Rs.mu, R0.ss_mu), 1e-9);
 res = add(res, 'sod_state Psi', cs(Rs.Psi, R0.ss_Psi), 1e-7); res = add(res, 'sod_state Phi', cs(Rs.Phi, R0.ss_Phi), 1e-7);
 [Sx, Sv] = sod_cov(X(1:400, :), V(1:400, :)); Bd = sod_boundary(X(1:400, :), V(1:400, :), 399 * dt);

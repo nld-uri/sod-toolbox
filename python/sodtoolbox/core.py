@@ -13,7 +13,7 @@ with mu ascending (smoothest first). Conventions used throughout the toolbox:
     lambda_i = 1 / mu_i                        (smooth orthogonal values, SOVs)
 
 Data are arrays with rows = time samples and columns = channels. Everything here is the same pencil; the options
-change only how the covariances are formed (derivative estimate, lag, centring, channel scaling, rank restriction).
+change only how the covariances are formed (derivative estimate, lag, centering, channel scaling, rank restriction).
 """
 from dataclasses import dataclass
 import numpy as np
@@ -106,7 +106,7 @@ def sod(X, V=None, dt=None, *, deriv='central', h=1, lag=0, center=False, scale=
     V      : its time derivative, same shape (model kinematics or a regularized estimate). If None, V is formed
              from X with `deriv` ('central', step h; or 'gradient') and dt.
     lag    : symmetric lag-`lag` covariances (noise-robust variant; general eigensolver)
-    center : remove the mean of X first, before any differencing (trend and stationary data); V is not centred,
+    center : remove the mean of X first, before any differencing (trend and stationary data); V is not centered,
              since <xdot> is part of the signal's roughness. Off for decays about an equilibrium of interest
     scale  : divide each channel by its RMS before forming the pencil (scale-invariant rank detection; results are
              returned in the original units). The pencil is invariant to channel scaling for full-rank data.
