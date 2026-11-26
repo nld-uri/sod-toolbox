@@ -6,23 +6,26 @@
 
 \newtheorem{proposition}{Proposition}
 
-\newcommand{\X}{\mathbf{X}}
-\newcommand{\V}{\mathbf{V}}
-\newcommand{\Y}{\mathbf{Y}}
-\newcommand{\Q}{\mathbf{Q}}
-\newcommand{\M}{\mathbf{M}}
-\newcommand{\K}{\mathbf{K}}
-\newcommand{\Lm}{\mathbf{L}}
-\newcommand{\G}{\mathbf{G}}
-\newcommand{\x}{\mathbf{x}}
-\newcommand{\y}{\mathbf{y}}
-\newcommand{\q}{\mathbf{q}}
-\newcommand{\Sg}{\symbf{\Sigma}}
-\newcommand{\Ps}{\symbf{\Psi}}
-\newcommand{\Ph}{\symbf{\Phi}}
-\newcommand{\psib}{\symbf{\psi}}
-\newcommand{\phib}{\symbf{\phi}}
-\newcommand{\etab}{\symbf{\eta}}
+\newcommand{\X}{{\symbfit{X}}}
+\newcommand{\V}{{\symbfit{V}}}
+\newcommand{\Y}{{\symbfit{Y}}}
+\newcommand{\Q}{{\symbfit{Q}}}
+\newcommand{\M}{{\symbfit{M}}}
+\newcommand{\K}{{\symbfit{K}}}
+\newcommand{\Lm}{{\symbfit{L}}}
+\newcommand{\G}{{\symbfit{G}}}
+\newcommand{\x}{{\symbfit{x}}}
+\newcommand{\y}{{\symbfit{y}}}
+\newcommand{\q}{{\symbfit{q}}}
+\newcommand{\Sg}{{\symbfit{\Sigma}}}
+\newcommand{\Ps}{{\symbfit{\Psi}}}
+\newcommand{\Ph}{{\symbfit{\Phi}}}
+\newcommand{\psib}{{\symbfit{\psi}}}
+\newcommand{\phib}{{\symbfit{\phi}}}
+\newcommand{\etab}{{\symbfit{\eta}}}
+% ISO 80000-2: italic variables (incl. capital Greek), bold italic vectors/matrices
+\unimathsetup{math-style=ISO,bold-style=ISO}
+% scalars: N, T, D, E, I, L, O (Landau)
 \newcommand{\avg}[1]{\langle #1\rangle}
 \newcommand{\code}[1]{\texttt{#1}}
 \setlength{\emergencystretch}{3em}
@@ -51,15 +54,16 @@
 \section{Overview}
 
 Smooth orthogonal decomposition (SOD) finds the coordinates of a multichannel
-record that change most slowly in time. For a record $\X$ with $m$ samples (rows)
+record that change most slowly in time. For a record $\X$ with $N$ samples (rows)
 and $n$ channels (columns), and its time derivative $\V$, it solves one real
 symmetric generalized eigenproblem,
 \begin{equation}
-  \Sg_v\,\psib=\mu\,\Sg_x\,\psib,\qquad \Sg_x=\avg{\x\x^\top},\quad \Sg_v=\avg{\dot\x\dot\x^\top},
+  \Sg_v\,\psib=\mu\,\Sg_x\,\psib,\qquad \Sg_x=\avg{\x\x^{\mathsf T}},\quad \Sg_v=\avg{\dot\x\dot\x^{\mathsf T}},
   \label{eq:sod}
 \end{equation}
-with the values $\mu_i$ in ascending order. The covectors $\psib_i$ define the
-smooth coordinates $\q=\X\Ps$; the smooth modes are $\Ph=\Sg_x\Ps$. SOD here is the temporal form: it smooths the coordinates in time. Its spatial dual, smooth mode decomposition (SMD)~\cite{Li2023}, smooths the mode shapes in space and suits full-field data that are richer in space than in time; Section~\ref{sec:smd} describes its implementation here. A smooth mode of SOD is the shape paired with a temporally smooth coordinate, not a spatially smoothed shape. The method
+where $\x$ is one sample (a row of $\X$) and $\avg{\cdot}$ is the sample mean.
+The SOD values $\mu_i$ are in ascending order. The covectors $\psib_i$, the columns of $\Ps$, define the
+smooth coordinates $\Q=\X\Ps$; the smooth modes are $\Ph=\Sg_x\Ps$. SOD here is the temporal form: it smooths the coordinates in time. Its spatial dual, smooth mode decomposition (SMD)~\cite{Li2023}, smooths the mode shapes in space and suits full-field data that are richer in space than in time; Section~\ref{sec:smd} describes its implementation here. A smooth mode of SOD is the shape paired with a temporally smooth coordinate, not a spatially smoothed shape. The method
 was introduced for vibration mode identification by Chelidze and
 Zhou~\cite{Chelidze2006} and for randomly excited systems by Farooq and
 Feeny~\cite{Farooq2008}. The pencil itself, with first differences, appeared earlier in statistics as
@@ -84,7 +88,7 @@ either this pencil formed in a different way, or a rule for reading its output.
     identity that ties the damping estimate to the end states of the record.
   \item \textbf{Windowed SOD} for slowly varying records, such as the decay of a
     nonlinear mode (Section~\ref{sec:nonlinear}).
-  \item \textbf{Reduced-order models}: LNM, MTA, POD, SOD and complex-mode bases,
+  \item \textbf{Reduced-order models (ROMs)}: LNM, modal truncation augmentation (MTA), proper orthogonal decomposition (POD), SOD and complex-mode bases,
     Galerkin and energy-Galerkin ROMs, exact simulation, and a
     linear-core-plus-residual basis for nonlinear structures.
 \end{itemize}
@@ -159,14 +163,14 @@ Reduced-order model & \code{sod\_modes}, then \code{rom\_config} or \code{rom\_s
 
 Rows of $\X$ and $\V$ are time samples, columns are channels. Averages
 $\avg{\cdot}$ are sample means. The toolbox normalises the covectors so that
-$\psib_i^\top\Sg_x\psib_j=\delta_{ij}$. Then:
+$\Ps^{\mathsf T}\Sg_x\Ps={\symbfit{I}}$, the identity. Then:
 \begin{center}\small
 \begin{tabular}{@{}ll@{}}
 \toprule
 Quantity & Definition\\
 \midrule
-smooth coordinates & $\q=\X\Ps$, unit variance\\
-smooth modes & $\Ph=\Sg_x\Ps$, so $\Ps^\top\Ph=\mathbf{I}$ and $\X=\q\Ph^\top$ on the data subspace\\
+smooth coordinates & $\Q=\X\Ps$, unit variance\\
+smooth modes & $\Ph=\Sg_x\Ps$, so $\Ps^{\mathsf T}\Ph={\symbfit{I}}$ and $\X=\Q\Ph^{\mathsf T}$ on the data subspace\\
 SOD values & $\mu_i=\avg{\dot q_i^2}/\avg{q_i^2}$, the mean-square frequency of $q_i$\\
 SOD frequencies & $\sqrt{\mu_i}$\\
 smooth orthogonal values & $\lambda_i=1/\mu_i$\\
@@ -174,20 +178,20 @@ smooth orthogonal values & $\lambda_i=1/\mu_i$\\
 \end{tabular}
 \end{center}
 By Parseval, $\mu_i$ is the power-weighted mean of $\omega^2$ over the spectrum of
-$q_i$. For a Gaussian signal $\sqrt{\mu_i}/2\pi$ is the zero up-crossing
+$q_i$. For a Gaussian signal $\sqrt{\mu_i}/(2\uppi)$ is the zero up-crossing
 rate~\cite{Rice1944}.
 
 \paragraph{Data-rank restriction.} When the record does not excite every
 direction, $\Sg_x$ is singular. With \code{tol} set (default $10^{-10}$), the
-pencil is solved on the eigenvectors of $\X^\top\X$ whose eigenvalues exceed
+pencil is solved on the eigenvectors of $\X^{\mathsf T}\X$ whose eigenvalues exceed
 \code{tol} times the largest. The returned $\Ps$ and $\Ph$ are mapped back to all
 channels.
 
 \subsection{Geometry}\label{sec:geometry}
 
-Each covector $\psib$ defines a scalar coordinate $q=\x^\top\psib$. The ratio
+Each covector $\psib$ defines a scalar coordinate $q=\x^{\mathsf T}\psib$. The ratio
 \begin{equation}
-  \rho(\psib)=\frac{\psib^\top\Sg_v\psib}{\psib^\top\Sg_x\psib}=\frac{\avg{\dot q^2}}{\avg{q^2}}
+  \rho(\psib)=\frac{\psib^{\mathsf T}\Sg_v\psib}{\psib^{\mathsf T}\Sg_x\psib}=\frac{\avg{\dot q^2}}{\avg{q^2}}
 \end{equation}
 measures how rough $q$ is. SOD minimises $\rho$; the stationary values of $\rho$
 are the $\mu_i$. POD, in contrast, maximises $\avg{q^2}$ alone and returns
@@ -213,11 +217,11 @@ are $0.4381$ and $1.8643$, against $\omega=0.4380,\ 1.8641$
 \subsection{When is SOD exact?}\label{sec:exact}
 
 Let $\Ph_0$ be the mass-normalised LNMs and $\etab=\Ph_0^{-1}\x$ the modal
-coordinates, with modal covariances $\G_x=\avg{\etab\etab^\top}$ and
-$\G_v=\avg{\dot{\etab}\dot{\etab}^\top}$.
+coordinates, with modal covariances $\G_x=\avg{\etab\etab^{\mathsf T}}$ and
+$\G_v=\avg{\dot{\etab}\dot{\etab}^{\mathsf T}}$.
 
 \begin{proposition}[Exactness]\label{prop:exact}
-SOD returns $\Ps=\Ph_0^{-\top}$ and $\mu_i=\omega_i^2$, up to scaling and order, if
+SOD returns $\Ps=\Ph_0^{-\mathsf T}$ and $\mu_i=\omega_i^2$, up to scaling and order, if
 (i) $\G_x$ and $\G_v$ are both diagonal (modal decorrelation) and (ii)
 $(\G_v)_{ii}=\omega_i^2(\G_x)_{ii}$ for each mode (modal virial balance). For
 distinct values the conditions are also necessary.
@@ -229,11 +233,11 @@ order the frequency bias is $\delta_i/2$, and modal correlation enters at second
 order. On a finite undamped record both conditions hold only approximately, so
 the bias is set by the record, not by the method.
 
-\paragraph{Example 1.} \code{ex01\_linear\_chain} uses a 4-DOF chain with equal
+\paragraph{Example 1.} \code{ex01\_linear\_chain} uses a 4-DOF (degree-of-freedom) chain with equal
 modal energies and exact velocities. Over $T=4000$ time units,
 $\lambda_i\omega_i^2-1$ was $5.2\times10^{-4}$, $3.1\times10^{-4}$,
 $-8.9\times10^{-5}$ and $5.0\times10^{-5}$. The smooth modes matched the LNMs with
-MAC $\ge0.99999994$. The error did not fall monotonically with record length
+modal assurance criterion (MAC) $\ge0.99999994$. The error did not fall monotonically with record length
 ($T=250$, 1000 and 4000 gave $1.2$, $2.5$ and $0.5\times10^{-3}$ at most); it
 follows the residual modal correlation of each record.
 
@@ -250,33 +254,33 @@ follows the residual modal correlation of each record.
 Damping breaks the correspondence in two ways, depending on the record.
 
 \paragraph{Stationary response.} With forcing and damping, the exact covariance
-identity reads $\Sg_x^{-1}\Sg_v=\mathbf{A}^\top+\Sg_x^{-1}\mathbf{S}\mathbf{B}^\top$, where
-$\mathbf{S}$ is the skew part of $\avg{\x\dot\x^\top}$ (the circulation). SOD never forms
-$\mathbf{S}$, so this term biases it. If the forcing covariance is proportional to
-the damping matrix, $\mathbf{S}=\mathbf{0}$ and SOD is exact for any damping. The bias
+identity reads $\Sg_x^{-1}\Sg_v=(\M^{-1}\K)^{\mathsf T}+\Sg_x^{-1}{\symbfit{S}}(\M^{-1}{\symbfit{C}})^{\mathsf T}$. Here $\M$, ${\symbfit{C}}$ and $\K$ are the mass, damping and stiffness matrices, and
+${\symbfit{S}}$ is the skew part of $\avg{\x\dot\x^{\mathsf T}}$ (the circulation). SOD never forms
+${\symbfit{S}}$, so this term biases it. If the forcing covariance is proportional to
+the damping matrix, ${\symbfit{S}}=\mathbf{0}$ and SOD is exact for any damping. The bias
 comes from the mismatch between forcing and damping, not from the damping class
 (Bellizzi and Sampaio~\cite{Bellizzi2009} reported exactness for uncorrelated modal
 forcing).
 
 \paragraph{Free decay.} Integration by parts leaves a boundary term, the energy
-lost over the record. Take a single-DOF decay with $\eta(0)=a\cos\varphi$ and
-$\dot\eta(0)=-\omega a\sin\varphi$, recorded until it has died out. Its SOD value is
+lost over the record. Take a single-DOF decay with damping ratio $\zeta$, amplitude $\alpha$, $\eta(0)=\alpha\cos\varphi$ and
+$\dot\eta(0)=-\omega\alpha\sin\varphi$, recorded until it has died out. Its SOD value is
 \begin{equation}
   \mu=\frac{\omega^2}{1+4\zeta^2\cos^2\varphi-2\zeta\sin2\varphi}.
 \end{equation}
 Released from rest ($\varphi=0$) the defect is $-4\zeta^2/(1+4\zeta^2)$, second order
 in $\zeta$; an initial velocity adds a first-order term that averages to zero over
 $\varphi$. In a multi-mode decay the modes also stay correlated,
-because the record lasts only about $1/\zeta\omega$. Example~4 shows
-configuration-SOD frequency errors of $0.2$--$1.5\%$ at $\zeta\approx1.3$--$2\%$.
+because the record lasts only about $1/(\zeta\omega)$. Example~4 shows
+configuration-SOD frequency errors of $0.2$--$1.5\,\%$ at $\zeta\approx1.3$--$2\,\%$.
 
 \paragraph{State SOD.} Apply the same pencil to the state $\y=(\x,\dot\x)$:
 \begin{equation}
-  \avg{\dot\y\dot\y^\top}\psib=\mu\avg{\y\y^\top}\psib .
+  \avg{\dot\y\dot\y^{\mathsf T}}\psib=\mu\avg{\y\y^{\mathsf T}}\psib .
 \end{equation}
 The pencil stays real and symmetric and is invariant under any change of state
-coordinates. Each complex mode $s_i=\sigma_i+\mathrm{i}\,\omega_{d,i}$ owns a real
-plane on which $\dot{\symbf\xi}_i=\Lm_i\symbf\xi_i$.
+coordinates. Each complex mode $s_i=\sigma_i+\mathrm{i}\,\omega_{\mathrm d,i}$ owns a real
+plane. Its two coordinates ${\symbfit{\xi}}_i$ obey $\dot{{\symbfit{\xi}}}_i=\Lm_i{\symbfit{\xi}}_i$.
 
 \begin{proposition}[State SOD]\label{prop:ssod}
 If the modal planes are uncorrelated, the values split by plane and the two values
@@ -287,30 +291,30 @@ is isotropic.
 
 So the geometric mean of a pair returns $|s_i|$ for any damping, without the
 virial balance. The plane itself carries the damping: a least-squares fit
-$\Lm=\avg{\dot\q\q^\top}\avg{\q\q^\top}^{-1}$ on the two coordinates gives
-$s_i$ and $\zeta_i=-\tfrac12\mathrm{tr}\,\Lm/\sqrt{\det\Lm}$ (Section~\ref{sec:damping}).
+$\Lm=\avg{\dot\q\q^{\mathsf T}}\avg{\q\q^{\mathsf T}}^{-1}$ on the two coordinates gives
+$s_i$ and $\zeta_i=-\tfrac12\operatorname{tr}\,\Lm/\sqrt{\det\Lm}$ (Section~\ref{sec:damping}).
 
 % =====================================================================
 \section{Practical data}\label{sec:practical}
 
 \subsection{Velocities from displacement}\label{sec:fd}
 
-\code{sod(X, dt=dt)} forms $\V$ by central differences,
-$v_j=(x_{j+h}-x_{j-h})/2h\Delta t$, and drops $h$ samples at each end;
+\code{sod(X, dt=dt)} forms $\V$ by central differences with step $h$ and sampling interval $\upDelta t$,
+$v_j=(x_{j+h}-x_{j-h})/(2h\upDelta t)$, and drops $h$ samples at each end;
 \code{deriv='gradient'} keeps every sample. A central difference multiplies a
-sinusoid of frequency $\omega$ by $\sin(\omega h\Delta t)/(\omega h\Delta t)$, so an
-exact mode returns $\sin(\omega h\Delta t)/h\Delta t$. The relative error is about
-$-(\omega h\Delta t)^2/6$. \code{cd\_correct(w, h*dt)} inverts it.
+sinusoid of frequency $\omega$ by $\sin(\omega h\upDelta t)/(\omega h\upDelta t)$, so an
+exact mode returns $\sin(\omega h\upDelta t)/(h\upDelta t)$. The relative error is about
+$-(\omega h\upDelta t)^2/6$. \code{cd\_correct(w, h*dt)} inverts it.
 
-\paragraph{Example 2.} On the chain of Example~1, at $\Delta t=0.4$ the raw error of
-mode~4 ($\omega\Delta t=1.02$) was $-0.17$. After \code{cd\_correct} every error fell
+\paragraph{Example 2.} On the chain of Example~1, at $\upDelta t=0.4$ the raw error of
+mode~4 ($\omega\upDelta t=1.02$) was $-0.17$. After \code{cd\_correct} every error fell
 to the finite-record floor of Example~1, below $2.6\times10^{-4}$ in frequency.
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=\linewidth]{figures/ex02_fd_bias.pdf}
-  \caption{Example 2. Left: central-difference error against $\omega\Delta t$ and
-  the prediction $1-\sin(\omega\Delta t)/\omega\Delta t$. Right: the error after
+  \caption{Example 2. Left: central-difference error against $\omega\upDelta t$ and
+  the prediction $1-\sin(\omega\upDelta t)/(\omega\upDelta t)$. Right: the error after
   \code{cd\_correct}.}
   \label{fig:ex02}
 \end{figure}
@@ -329,10 +333,10 @@ built in.
     lab's kinematics toolbox) and call \code{sod(X, V)}.
 \end{itemize}
 
-\paragraph{Example 3.} A 6-DOF chain ($\zeta=2\%$) was driven at its last mass by
-noise band-limited at $2.6$~rad/s, between modes 5 and 6, and the displacements
-carried 1\% white sensor noise. With central differences the six SOD frequencies
-were $0.282$, $0.788$, $1.385$, $3.627$, $14.28$ and $15.76$~rad/s, and recognition kept
+\paragraph{Example 3.} A 6-DOF chain ($\zeta=2\,\%$) was driven at its last mass by
+noise band-limited at $2.6\,\mathrm{rad/s}$, between modes 5 and 6, and the displacements
+carried 1\,\% white sensor noise. With central differences the six SOD frequencies
+were $0.282$, $0.788$, $1.385$, $3.627$, $14.28$ and $15.76\,\mathrm{rad/s}$, and recognition kept
 only the first coordinate. With $h=2$ and lag~5 they were $0.271$, $0.739$, $1.167$,
 $1.564$, $1.849$ and $8.43$; recognition kept modes 1--4, at peaks $0.270$, $0.735$,
 $1.168$ and $1.566$ (true $0.271$, $0.741$, $1.174$, $1.582$). Mode~5, weakly excited
@@ -342,7 +346,7 @@ near the cutoff, mixed with noise and was rejected.
   \centering
   \includegraphics[width=\linewidth]{figures/ex03_noise_recognition.pdf}
   \caption{Example 3. Left: SOD frequencies with central differences and with lagged
-  covariances; filled markers were kept by \code{select\_config}. Right: DCT spectra
+  covariances; filled markers were kept by \code{select\_config}. Right: discrete cosine transform (DCT) spectra
   of the lagged-SOD coordinates; grey: rejected.}
   \label{fig:ex03}
 \end{figure}
@@ -350,7 +354,7 @@ near the cutoff, mixed with noise and was rejected.
 \subsection{Rank and channel scaling}\label{sec:rank}
 
 The pencil is invariant to channel scaling for full-rank data. The rank cut is not.
-\code{scale=True} divides each channel by its RMS before the rank test and maps the
+\code{scale=True} divides each channel by its root mean square (RMS) before the rank test and maps the
 result back to the original units. On a forced cantilever record of data rank 9 out
 of 60, scaled and unscaled SOD kept different weak directions and agreed only on the
 two smoothest values. Use \code{scale=True} when channels carry different units,
@@ -363,14 +367,14 @@ coordinate can be smoother than a weakly excited mode. The toolbox therefore nev
 selects or pairs coordinates by $\mu_i$.
 \begin{itemize}
   \item \code{select\_config}: keep coordinate $i$ if the peak of its smoothed DCT-II
-    periodogram lies within $\max(5\%,\ \text{half-power width})$ of $\sqrt{\mu_i}$ and
-    below a frequency limit. The width is capped at 15\%, so a drifting coordinate,
+    periodogram lies within $\max(5\,\%,\ \text{half-power width})$ of $\sqrt{\mu_i}$ and
+    below a frequency limit. The width is capped at 15\,\%, so a drifting coordinate,
     whose spectrum peaks near zero, cannot pass. Coordinates sharing one peak keep
     only the one with the largest response energy.
   \item \code{pair\_state}: pair two state-SOD coordinates if their peaks agree and the
-    spectrum of $q_a+\mathrm{i}q_b$ is one-sided by at least 0.85. A pair between 0.75
+    spectrum of $q_a+\mathrm{i}q_b$ is one-sided by at least 0.85. This one-sided fraction is the circularity. A pair between 0.75
     and 0.85 is rescued if its banded one-sidedness is at least 0.95 and it carries at
-    least 1\% of the response energy.
+    least 1\,\% of the response energy.
 \end{itemize}
 
 \subsection{Smooth trends}\label{sec:trend}
@@ -378,16 +382,16 @@ selects or pairs coordinates by $\mu_i$.
 SOD needs no dynamics. Any record whose sources are uncorrelated over the record,
 with uncorrelated derivatives, is unmixed exactly. With \code{center=True}, a
 step $h$ and a lag, the smoothest coordinate is a trend estimate. In
-Figure~\ref{fig:trend}, six channels mix a half-cycle drift, a slow cycle and four
-fast sources. With $h=15$ and lag~31 the drift error at 0.3, 1 and 3\% sensor noise
+Figure~\ref{fig:trend}, six channels $\x={\symbfit{A}}{\symbfit{s}}$ mix the sources ${\symbfit{s}}$: a half-cycle drift, a slow cycle and four
+fast sources. With $h=15$ and lag~31 the drift error at 0.3, 1 and 3\,\% sensor noise
 was $7.9\times10^{-3}$, $2.6\times10^{-2}$ and $8.1\times10^{-2}$. The oracle unmixing
-$\mathbf{A}^{-1}$ gave $7.8\times10^{-3}$, $2.6\times10^{-2}$ and $7.8\times10^{-2}$. The
+${\symbfit{A}}^{-1}$ gave $7.8\times10^{-3}$, $2.6\times10^{-2}$ and $7.8\times10^{-2}$. The
 leading POD coordinate correlated with the drift at $0.010$.
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=\linewidth]{../animations/trend_extraction_still.pdf}
-  \caption{Trend extraction at 3\% sensor noise. Left: one observed channel. Right:
+  \caption{Trend extraction at 3\,\% sensor noise. Left: one observed channel. Right:
   the true drift, the smoothest SOD coordinate, the oracle unmixing and the best scaled
   fit of the leading POD coordinate. Animation:
   \code{docs/animations/trend\_extraction.mp4}.}
@@ -399,24 +403,24 @@ leading POD coordinate correlated with the drift at $0.010$.
 
 \code{decay\_damping(R, Yd, dt, wmax)} takes a state-SOD result and the state
 derivative. For each plane found by \code{pair\_state} it fits
-$\Lm=\avg{\dot\q\q^\top}\avg{\q\q^\top}^{-1}$ and returns $s$ and $\zeta$. It also fits
-$\Lm$ on the $k$ smoothest coordinates at once (the subspace fit, a
-continuous-time least-squares relative of DMD~\cite{Schmid2010}) and returns its
+$\Lm=\avg{\dot\q\q^{\mathsf T}}\avg{\q\q^{\mathsf T}}^{-1}$ and returns $s$ and $\zeta$. It also fits
+$\Lm$ on the $r$ smoothest coordinates at once (the subspace fit, a
+continuous-time least-squares relative of dynamic mode decomposition, DMD~\cite{Schmid2010}) and returns its
 eigenvalues.
 
 \paragraph{The damping identity.} For free response the trace of a plane fit
 depends only on the end states,
 \begin{equation}
-  \mathrm{tr}\,\Lm=\frac{\q_T^\top\G^{-1}\q_T-\q_0^\top\G^{-1}\q_0}{2T},\qquad \G=\avg{\q\q^\top}.
+  \operatorname{tr}\,\Lm=\frac{\q_T^{\mathsf T}\Sg_q^{-1}\q_T-\q_0^{\mathsf T}\Sg_q^{-1}\q_0}{2T},\qquad \Sg_q=\avg{\q\q^{\mathsf T}}.
 \end{equation}
 So the estimate needs a record that has decayed, or a known end state. The identity
-is exact for the chord derivative $(q_{k+1}-q_k)/\Delta t$. With exact $\dot q$ and
-sampled sums the two forms differ by a relative $O((|s|\Delta t)^2/\zeta)$, because
+is exact for the chord derivative $(q_{k+1}-q_k)/\upDelta t$. With exact $\dot q$ and
+sampled sums the two forms differ by a relative $O((|s|\upDelta t)^2/\zeta)$, because
 the integrand oscillates with size $|s|$ about a mean $\zeta|s|$.
 
-\paragraph{Example 4.} A 4-DOF chain with Rayleigh damping (2\% at modes 1 and 4)
+\paragraph{Example 4.} A 4-DOF chain with Rayleigh damping (2\,\% at modes 1 and 4)
 decayed from equal modal energies. Configuration SOD erred in frequency by
-$+0.21$, $-0.82$, $+1.5$ and $-1.3\%$. State SOD gave four planes with circularity
+$+0.21$, $-0.82$, $+1.5$ and $-1.3\,\%$. State SOD gave four planes with circularity
 $0.992$--$0.995$. The per-plane damping erred by $3.6\times10^{-4}$, $-2.7\times10^{-4}$,
 $-5.2\times10^{-3}$ and $8.6\times10^{-3}$ (relative); a tilted plane leaks the dynamics
 of its neighbour. The subspace fit returned every $\zeta$ to $2.4\times10^{-14}$ or better.
@@ -446,14 +450,14 @@ of its neighbour. The subspace fit returned every $\zeta$ to $2.4\times10^{-14}$
 samples along the record and returns, per window, the frequency and smooth mode of
 the smoothest coordinate. Velocities are central differences inside the window.
 \code{boundary=True} subtracts the symmetric part of the boundary term
-$(\x_T\dot\x_T^\top-\x_0\dot\x_0^\top)/T$ from $\Sg_v$, which removes the leading
+$(\x_T\dot\x_T^{\mathsf T}-\x_0\dot\x_0^{\mathsf T})/T$ from $\Sg_v$, with $T$ the window length, which removes the leading
 finite-window bias for undamped motion.
 
 Figure~\ref{fig:backbone} follows a hardening two-mass chain (cubic spring at mass~1,
-$\zeta=0.5\%$) from an amplitude where mode~1 is 12\% stiffer than linear. Against the
+$\zeta=0.5\,\%$) from an amplitude where mode~1 is 12\,\% stiffer than linear. Against the
 zero-crossing frequency of $x_1$, windows of 12 linear periods deviated by a median
 $4.1\times10^{-4}$ with the boundary correction and $3.2\times10^{-3}$ without; the
-largest deviation was about 3\% in both. Windowed values are equivalent-linear values
+largest deviation was about 3\,\% in both. Windowed values are equivalent-linear values
 of the window. The SOD frequency is a mean-square frequency, so higher harmonics of
 the orbit raise it.
 
@@ -472,40 +476,40 @@ the orbit raise it.
   \item \textbf{Bases.} \code{lnm}, \code{mta} (LNMs plus static load vectors,
     $\M$-orthonormal), \code{pod}, \code{sod\_modes} (unit-norm smooth modes on the
     data subspace) and \code{complex\_modes} (slowest eigen-planes in real form).
-  \item \textbf{Configuration ROM.} \code{rom\_config} projects $\M,\K,\mathbf{C}$ and
+  \item \textbf{Configuration ROM.} \code{rom\_config} projects $\M,\K,{\symbfit{C}}$ and
     the load map on a basis and simulates exactly under zero-order-hold input.
   \item \textbf{State ROM.} \code{rom\_state(..., W=energy\_weight(M, K))} is an
     energy-Galerkin projection on the smooth modes of state SOD. Petrov--Galerkin with
     the data covectors (\code{W=None}) is not stable in general and is kept only for
     comparison.
   \item \textbf{Linear core plus residual.} For nonlinear data, \code{residual\_basis}
-    fits $\ddot\q\approx\K_a\q+\mathbf{C}_a\dot\q$ on the $r_1$ smoothest SOD coordinates
+    fits $\ddot\q\approx\K_a\q+{\symbfit{C}}_a\dot\q$ on the $r_1$ smoothest SOD coordinates
     and adds the leading directions of the equation error. The useful variant is
-    \code{kind='k'}: the quasi-static displacement $\K^{-1}\M\mathbf{e}$ driven by the
-    residual force. The acceleration-level residual (\code{'a'}) and its low-passed
+    \code{kind='k'}: the quasi-static displacement $\K^{-1}\M{\symbfit{e}}$ driven by the
+    residual force, where ${\symbfit{e}}$ is the equation error. The acceleration-level residual (\code{'a'}) and its low-passed
     form (\code{'f'}) were not useful in our nonlinear-beam tests.
 \end{itemize}
 
 % =====================================================================
 \section{Smooth mode decomposition}\label{sec:smd}
-SMD exchanges the roles of space and time~\cite{Li2023}. With snapshots $\symbf W$ (snapshots $\times$ points),
-quadrature weights $\symbf w$ and spatial derivative fields $\symbf G_k$ of the same snapshots,
+SMD exchanges the roles of space and time~\cite{Li2023}. With snapshots $\symbfit W$ (snapshots $\times$ points),
+quadrature weights $\symbfit w$ and spatial derivative fields $\symbfit G_k$ of the same snapshots, with operator weights $c_k$,
 \begin{equation}
-\symbf S_G\symbf p=\mu\,\symbf S_W\symbf p,\qquad \symbf S_W=\symbf W\,\mathrm{diag}(\symbf w)\,\symbf W^\top,\quad
-\symbf S_G=\textstyle\sum_k c_k\,\symbf G_k\,\mathrm{diag}(\symbf w)\,\symbf G_k^\top .
+\symbfit S_G\symbfit p=\mu\,\symbfit S_W\symbfit p,\qquad \symbfit S_W=\symbfit W\,\operatorname{diag}(\symbfit w)\,\symbfit W^{\mathsf T},\quad
+\symbfit S_G=\textstyle\sum_k c_k\,\symbfit G_k\,\operatorname{diag}(\symbfit w)\,\symbfit G_k^{\mathsf T} .
 \end{equation}
-Each covector $\symbf p$ gives a mode $\symbf{\phi}=\symbf W^\top\symbf p$ of unit weighted norm, and
-$\mu=\|D\symbf{\phi}\|^2/\|\symbf{\phi}\|^2$ is the Rayleigh quotient of the spatial operator $D$.
-For a sinusoidal shape $\mu=k^{2m}$, with $m$ the operator order; $k=\mu^{1/(2m)}$ is the SMD wavenumber.
+Each covector $\symbfit p$ gives a mode $\symbfit{\phi}=\symbfit W^{\mathsf T}\symbfit p$ of unit weighted norm, and
+$\mu=\|\mathcal{D}\symbfit{\phi}\|^2/\|\symbfit{\phi}\|^2$ is the Rayleigh quotient of the spatial operator $\mathcal{D}$.
+For a sinusoidal shape of wavenumber $k$, $\mu=k^{2m}$, with $m$ the operator order; $k=\mu^{1/(2m)}$ is the SMD wavenumber.
 \begin{itemize}
-\item Operators: \code{'grad'} ($m=1$; strings, membranes, flows), \code{'second'} ($m=2$; beams, and the Hessian with weight 2 on the mixed term on grids), \code{'laplacian'} ($m=2$), \code{'plate'} ($m=2$; Kirchhoff bending energy $(1-\nu)(w_{xx}^2+2w_{xy}^2+w_{yy}^2)+\nu(\nabla^2w)^2$, Poisson ratio \code{nu}).
-\item Physical weights: \code{density} (mass per length or area) multiplies the weights of $\symbf S_W$ and \code{stiffness} ($T$, $EI$ or the plate rigidity) those of $\symbf S_G$. For a self-adjoint structure matched by the operator, $\mu_i=\omega_i^2$ (\code{R.omega}) and the modes are mass-normalized, from any snapshots that span them. Unit weights bias the modes of non-uniform structures, which are mass-orthogonal, not $L^2$-orthogonal.
+\item Operators: \code{'grad'} ($m=1$; strings, membranes, flows), \code{'second'} ($m=2$; beams, and the Hessian with weight 2 on the mixed term on grids), \code{'laplacian'} ($m=2$), \code{'plate'} ($m=2$; Kirchhoff bending energy of the deflection $w$, $(1-\nu)(w_{xx}^2+2w_{xy}^2+w_{yy}^2)+\nu(\nabla^2w)^2$, Poisson ratio \code{nu}).
+\item Physical weights: \code{density} (mass per length or area) multiplies the weights of $\symbfit S_W$ and \code{stiffness} (tension, bending stiffness $EI$ or plate rigidity $D$) those of $\symbfit S_G$. For a self-adjoint structure matched by the operator, $\mu_i=\omega_i^2$ (\code{R.omega}) and the modes are mass-normalized, from any snapshots that span them. Unit weights bias the modes of non-uniform structures, which are mass-orthogonal, not $L^2$-orthogonal.
 \item \code{maf} is the maximum autocorrelation factor transform (Switzer and Green, 1984) with snapshots as bands: SMD with a forward-difference gradient and unit weights (\code{axes='xy'}), or with a single directional difference (\code{axes='x'} or \code{'y'}, the single lag of Green et al., 1988).
-\item Derivative estimators: \code{'fd'} (second-order finite differences, also on non-uniform lines; a derivative is kept only where its stencil is measured), \code{'whittaker'} (penalized smoothing with gain $1/(1+(k/k_c)^{2p})$; fills masked points), \code{'savgol'} (local polynomials on complete uniform grids; the window is set from the measured half-gain cutoff).
+\item Derivative estimators: \code{'fd'} (second-order finite differences, also on non-uniform lines; a derivative is kept only where its stencil is measured), \code{'whittaker'} (penalized smoothing of order $p$ with gain $1/(1+(k/k_{\mathrm c})^{2p})$ and cutoff $k_{\mathrm c}$; fills masked points), \code{'savgol'} (local polynomials on complete uniform grids; the window is set from the measured half-gain cutoff).
 \item Both integrals run over the points where the derivative is valid. Snapshot order, spacing and rate are never used.
-\item Cutoffs: in the beam test with 0.5\% noise, Whittaker needed $k_c$ about 3--6 times and Savitzky--Golay about 8 times the largest wavenumber of interest. Scan $k_c$ with \code{smd\_kc\_scan} and keep a value where the wavenumbers do not move.
-\item Conditioning: the Whittaker system has condition number up to about $1+(2/(h k_c))^{2p}$; above $10^{12}$ a warning is issued.
-\item Implementation: $\symbf S_W$ is never formed. The thin SVD of the weighted field gives the data span, and the pencil is solved on it, so long records (many snapshots) cost $O(n_t n r)$.
+\item Cutoffs: in the beam test with 0.5\,\% noise, Whittaker needed $k_{\mathrm c}$ about 3--6 times and Savitzky--Golay about 8 times the largest wavenumber of interest, $k_{\max}$. Scan $k_{\mathrm c}$ with \code{smd\_kc\_scan} and keep a value where the wavenumbers do not move.
+\item Conditioning: the Whittaker system has condition number up to about $1+(2/(\upDelta x\,k_{\mathrm c}))^{2p}$, with grid spacing $\upDelta x$; above $10^{12}$ a warning is issued.
+\item Implementation: $\symbfit S_W$ is never formed. The thin singular value decomposition (SVD) of the weighted field gives the data span, and the pencil is solved on it, so long records (many snapshots) cost $O(n_{\mathrm s}n_{\mathrm p}r_{\mathrm d})$ for $n_{\mathrm s}$ snapshots, $n_{\mathrm p}$ points and data rank $r_{\mathrm d}$.
 \end{itemize}
 \paragraph{What the tests establish.} SMD values depend only on the span of the snapshots, so shuffled or
 correlated snapshots give identical results. With the operator matched to the stiffness on a complete
@@ -518,7 +522,7 @@ frequencies to $1.3\times10^{-4}$ from five snapshots (\code{python/tests/test\_
 \subsection{SMD examples}\label{sec:smd-examples}
 Examples 5--10 (\code{python/examples/ex05}--\code{ex10}, with MATLAB twins) store their printed output next to the scripts. Every number below is copied from those outputs.
 
-\paragraph{Example 5: snapshots without time.} A fixed rectangular membrane ($a=1$, $b=0.7$, $81\times57$ grid) carries a random combination of its first eight modes. SMD with the gradient returns the modes ($1-\mathrm{MAC}\le6.7\times10^{-8}$) and the wavenumbers to $4.0\times10^{-3}$ from 200 snapshots, from the same snapshots shuffled, and from only eight. The remaining error is the central-difference bias, the spatial twin of Example~2.
+\paragraph{Example 5: snapshots without time.} A fixed rectangular membrane (sides $a=1$, $b=0.7$, $81\times57$ grid) carries a random combination of its first eight modes. SMD with the gradient returns the modes ($1-\mathrm{MAC}\le6.7\times10^{-8}$) and the wavenumbers to $4.0\times10^{-3}$ from 200 snapshots, from the same snapshots shuffled, and from only eight. The remaining error is the central-difference bias, the spatial twin of Example~2.
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\linewidth]{figures/ex05_smd_membrane.pdf}
@@ -526,7 +530,7 @@ Examples 5--10 (\code{python/examples/ex05}--\code{ex10}, with MATLAB twins) sto
   \label{fig:ex05}
 \end{figure}
 
-\paragraph{Example 6: physical weights.} A pinned--pinned beam with $EI=1$ and $\rho A=1+2x$. Its modes are mass-orthogonal, not $L^2$-orthogonal, so unit weights bias the shapes ($1-\mathrm{MAC}$ up to $0.15$). With \code{density} and \code{stiffness}, six snapshots give the modes to $1-\mathrm{MAC}\le2.1\times10^{-9}$ and the frequencies of a 100-term Galerkin model to $1.9\times10^{-4}$ on 401 points; the error falls as $h^2$.
+\paragraph{Example 6: physical weights.} A pinned--pinned beam with $EI=1$ and mass per length $1+2x$. Its modes are mass-orthogonal, not $L^2$-orthogonal, so unit weights bias the shapes ($1-\mathrm{MAC}$ up to $0.15$). With \code{density} and \code{stiffness}, six snapshots give the modes to $1-\mathrm{MAC}\le2.1\times10^{-9}$ and the frequencies of a 100-term Galerkin model to $1.9\times10^{-4}$ on 401 points; the error falls as $(\upDelta x)^2$.
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\linewidth]{figures/ex06_smd_nonuniform_beam.pdf}
@@ -534,7 +538,7 @@ Examples 5--10 (\code{python/examples/ex05}--\code{ex10}, with MATLAB twins) sto
   \label{fig:ex06}
 \end{figure}
 
-\paragraph{Example 7: noise and the cutoff.} A cantilever (three modes, 40 snapshots) with 0.1, 0.5 and 2\% white noise, ten realizations each. Plain finite differences give wavenumber errors of 3.8, 9.5 and 20 (medians). Whittaker smoothing brings them to $8\times10^{-4}$, $2.8\times10^{-3}$ and $8.1\times10^{-3}$ at its best cutoff, which falls from about $5\,k_{\max}$ to $3\,k_{\max}$ as noise grows; Savitzky--Golay is 2.4--4.3 times worse.
+\paragraph{Example 7: noise and the cutoff.} A cantilever (three modes, 40 snapshots) with 0.1, 0.5 and 2\,\% white noise, ten realizations each. Plain finite differences give wavenumber errors of 3.8, 9.5 and 20 (medians). Whittaker smoothing brings them to $8\times10^{-4}$, $2.8\times10^{-3}$ and $8.1\times10^{-3}$ at its best cutoff, which falls from about $5\,k_{\max}$ to $3\,k_{\max}$ as noise grows; Savitzky--Golay is 2.4--4.3 times worse.
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\linewidth]{figures/ex07_smd_noise.pdf}
@@ -542,7 +546,7 @@ Examples 5--10 (\code{python/examples/ex05}--\code{ex10}, with MATLAB twins) sto
   \label{fig:ex07}
 \end{figure}
 
-\paragraph{Example 8: boundaries.} Exactness needs orthogonality over the measured domain. A centred field of view of $0.8L$ on a cantilever biases the wavenumbers by $-11.5$, $+1.8$ and $+11\%$. A circular hole of radius $0.14$ in a membrane biases the $(1,1)$ mode by $+11\%$. These are the spatial counterparts of SOD's window bias.
+\paragraph{Example 8: boundaries.} Exactness needs orthogonality over the measured domain. A centred field of view of $0.8L$ on a cantilever of length $L$ biases the wavenumbers by $-11.5$, $+1.8$ and $+11\,\%$. A circular hole of radius $0.14$ in a membrane biases the $(1,1)$ mode by $+11\,\%$. These are the spatial counterparts of SOD's window bias.
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\linewidth]{figures/ex08_smd_boundaries.pdf}
@@ -550,7 +554,7 @@ Examples 5--10 (\code{python/examples/ex05}--\code{ex10}, with MATLAB twins) sto
   \label{fig:ex08}
 \end{figure}
 
-\paragraph{Example 9: sub-Nyquist and random snapshots.} A simply supported beam ($\omega_j=(j\pi)^2$, highest mode at 56.5~Hz) decays freely for 10~s. SMD with physical weights gives all six frequencies to $1.85\times10^{-4}$ at every sampling rate from 400~Hz down to 2~Hz, and from 12 randomly timed snapshots. SOD with central differences fails once $\omega_6\Delta t$ is large (error $0.25$ at $f_s=3.5f_6$, near 1 below Nyquist). With exact velocities SOD often survives undersampling but fails erratically where aliased frequencies nearly coincide.
+\paragraph{Example 9: sub-Nyquist and random snapshots.} A simply supported beam ($\omega_j=(j\uppi)^2$, highest mode at $f_6=\omega_6/(2\uppi)=56.5\,\mathrm{Hz}$) decays freely for $10\,\mathrm{s}$. SMD with physical weights gives all six frequencies to $1.85\times10^{-4}$ at every sampling rate from $400\,\mathrm{Hz}$ down to $2\,\mathrm{Hz}$, and from 12 randomly timed snapshots. SOD with central differences fails once $\omega_6\upDelta t$ is large (error $0.25$ at sampling rate $f_{\mathrm s}=3.5f_6$, near 1 below Nyquist). With exact velocities SOD often survives undersampling but fails erratically where aliased frequencies nearly coincide.
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.75\linewidth]{figures/ex09_smd_subnyquist.pdf}
@@ -558,7 +562,7 @@ Examples 5--10 (\code{python/examples/ex05}--\code{ex10}, with MATLAB twins) sto
   \label{fig:ex09}
 \end{figure}
 
-\paragraph{Example 10: a plate.} A simply supported plate ($a=1$, $b=0.6$, $D=\rho h=1$, $\nu=0.3$) has $\omega_{mn}=\pi^2[(m/a)^2+(n/b)^2]$. With physical weights the \code{plate} operator returns the first eight frequencies to within $0.21\%$; the Hessian and Laplacian operators agree with it to discretization error, because the Gaussian-curvature term vanishes on simply supported edges.
+\paragraph{Example 10: a plate.} A simply supported plate (sides $a=1$, $b=0.6$, $D=1$, unit mass per area, $\nu=0.3$) has $\omega_{mn}=\uppi^2[(m/a)^2+(n/b)^2]$. With physical weights the \code{plate} operator returns the first eight frequencies to within $0.21\,\%$; the Hessian and Laplacian operators agree with it to discretization error, because the Gaussian-curvature term vanishes on simply supported edges.
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\linewidth]{figures/ex10_smd_plate.pdf}
@@ -573,7 +577,7 @@ Examples 5--10 (\code{python/examples/ex05}--\code{ex10}, with MATLAB twins) sto
 Python 3.10 or later with NumPy and SciPy (\code{pip install -r requirements.txt}).
 Add \code{python/} to the path and \code{import sodtoolbox as st}. MATLAB R2020b or
 later; add \code{matlab/} to the path. No MATLAB toolboxes are needed; the DCT is
-computed from an FFT.
+computed from a fast Fourier transform (FFT).
 
 \subsection{Functions}
 \begin{center}\small
@@ -631,7 +635,7 @@ Option & Default & Effect\\
 
 \subsection{Result fields}
 \code{mu} (ascending), \code{freq} ($\sqrt{\mu}$, NaN where $\mu\le0$), \code{sov}
-($1/\mu$), \code{Psi} (covectors, $\psib^\top\Sg_x\psib=1$), \code{Phi} (smooth modes
+($1/\mu$), \code{Psi} (covectors, $\psib^{\mathsf T}\Sg_x\psib=1$), \code{Phi} (smooth modes
 $\Sg_x\Ps$), \code{Q} (coordinates for the samples used). Python also offers
 \code{modes\_unit()}.
 

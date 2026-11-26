@@ -74,7 +74,7 @@ def rayleigh(nf, still_only):
     a1.set_title(r'POD (dotted), smooth modes (solid)', fontsize=11)
     tt = t[:1200]
     qline, = a2.plot([], [], color=C[4], lw=1.0)
-    a2.set_xlim(tt[0], tt[-1]); a2.set_xlabel(r'$t$', labelpad=1); a2.set_ylabel(r'$q=\mathbf{x}^\top\boldsymbol{\psi}$', labelpad=2); a2.set_title(r'coordinate read by $\boldsymbol{\psi}$', fontsize=11)
+    a2.set_xlim(tt[0], tt[-1]); a2.set_xlabel(r'$t$', labelpad=1); a2.set_ylabel(r'$q=\mathbf{x}^{\mathsf T}\boldsymbol{\psi}$', labelpad=2); a2.set_title(r'coordinate read by $\boldsymbol{\psi}$', fontsize=11)
     a2.set_yticks([])
     a3.plot(np.degrees(th), rq, color=INK, lw=1.4)
     for j in range(2):
