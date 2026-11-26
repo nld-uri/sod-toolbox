@@ -1,0 +1,22 @@
+{
+  "title": "SOD Toolbox: smooth orthogonal decomposition and smooth mode decomposition for modal identification and reduced-order modeling",
+  "upload_type": "software",
+  "description": "<p>Smooth orthogonal decomposition (SOD) and its spatial dual, smooth mode decomposition (SMD), in Python and base MATLAB. SOD solves one real symmetric generalized eigenproblem for the smoothest coordinates of a multichannel record: configuration and state SOD, mode recognition by frequency and circularity, damping from free decays, windowed tracking of frequency-energy dependence, trend extraction and reduced-order-model helpers. SMD recovers mode shapes and frequencies from snapshots in any order, with physical weighting and gradient, second-derivative, plate and Laplacian operators. Includes a user manual, slides, animations, ten worked examples and self-contained tests. Nonlinear Dynamics Laboratory, University of Rhode Island.</p>",
+  "creators": [
+    {
+      "name": "Chelidze, David",
+      "affiliation": "University of Rhode Island",
+      "orcid": "0000-0003-0655-1439"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "smooth orthogonal decomposition",
+    "smooth mode decomposition",
+    "modal identification",
+    "output-only modal analysis",
+    "reduced-order modeling",
+    "nonlinear normal modes",
+    "damping identification"
+  ]
+}
