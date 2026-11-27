@@ -1,5 +1,7 @@
 # SOD Toolbox
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24602190.svg)](https://doi.org/10.5281/zenodo.24602190)
+
 Smooth orthogonal decomposition (SOD) for modal identification and reduced-order
 modeling, in Python and base MATLAB. Nonlinear Dynamics Laboratory, University of
 Rhode Island. It is the common code base of a series of SOD papers in preparation.
